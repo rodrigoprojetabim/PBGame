@@ -49,4 +49,7 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "Utilities", meta = (Keywords = "pie editor"))
 	static bool IsPIE(AActor* WorldContext);
 
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "pie editor"))
+	static void RenameActor(AActor* Actor, const FString& NewName);
+
 };

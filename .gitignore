@@ -44,6 +44,7 @@
 *.pdb
 *.ffs_gui
 **/*.framework/**
+*.uproject
 
 # Derived data cache is never checked in
 /DerivedDataCache/**
@@ -52,9 +53,6 @@
 /Intermediate/**
 /Plugins/**/Intermediate/**
 
-# NOTE: For now, we'll commit executable binaries too (game DLLs)
-#/*/Binaries/**
-#/*/Plugins/**/Binaries/**
 
 # Ignore any saved local files
 /Saved/**
@@ -62,6 +60,7 @@
 
 # Other binaries
 /.ue4dependencies
+/Binaries/**
 /Content/*
 !/Content/UserInterface/
 !/Content/VisGame/

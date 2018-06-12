@@ -219,4 +219,10 @@ bool UProjetaBimPluginBPLibrary::IsPIE(AActor * WorldContext)
 	return false;
 }
 
+void UProjetaBimPluginBPLibrary::RenameActor(AActor* Actor, const FString& NewName)
+{
+	Actor->Rename(*NewName);
+	Actor->SetActorLabel(NewName);
+}
+
 
