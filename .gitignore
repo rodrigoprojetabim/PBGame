@@ -60,6 +60,7 @@
 
 # Other binaries
 /.ue4dependencies
+/Trash/**
 /Binaries/**
 /Content/*
 !/Content/UserInterface/
