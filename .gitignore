@@ -13,9 +13,6 @@
 #  Use ! to negate a previous pattern.  But it doesn't work if the parent sub-folder was masked out already.
 # 
 
-#oi
-#oioioi
-#oioi
 # Ignore project files in the root
 /*.sln
 /*.xcodeproj
