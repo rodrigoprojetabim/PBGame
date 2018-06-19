@@ -44,6 +44,7 @@
 *.ffs_gui
 **/*.framework/**
 *.uproject
+*.log
 
 # Derived data cache is never checked in
 /DerivedDataCache/**
@@ -55,7 +56,7 @@
 
 # Ignore any saved local files
 /Saved/**
-/WindowsNoEditor/**
+/WindowsNoEditor*/**
 
 # Other binaries
 /.ue4dependencies
