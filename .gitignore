@@ -12,6 +12,7 @@
 #  Use \ to escape special characters like ! and #
 #  Use ! to negate a previous pattern.  But it doesn't work if the parent sub-folder was masked out already.
 # 
+#teste
 
 # Ignore project files in the root
 /*.sln
