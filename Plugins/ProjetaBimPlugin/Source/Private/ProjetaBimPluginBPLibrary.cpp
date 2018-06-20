@@ -9,7 +9,6 @@
 #include "IImageWrapperModule.h"
 #include "PlatformFilemanager.h"
 
-
 UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
@@ -228,3 +227,11 @@ void UProjetaBimPluginBPLibrary::RenameActor(AActor* Actor, const FString& NewNa
 }
 
 
+FString UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(AActor* Actor)
+{
+	if (Actor)
+	{
+		return Actor->GetLevel()->GetOuter()->GetName();
+	}
+	return FString();
+}

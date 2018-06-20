@@ -52,4 +52,7 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "pie editor"))
 	static void RenameActor(AActor* Actor, const FString& NewName);
 
+	UFUNCTION(BlueprintPure, Category = "Utilities")
+	static FString GetActorsStreamingLevelName(AActor* Actor);
+
 };
