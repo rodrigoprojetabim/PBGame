@@ -1,0 +1,22 @@
+{
+	"Propriedades": {
+		"Abrir por padrao": ["ARQ","FUN"]
+	},
+	"ACV": {
+		"Nome": "AC e Ventilação",
+		"Sets": {
+			"ble": "bleh",
+			"bla": "bla",
+		}
+	},
+	"ARQ": {
+		"Nome": "Arquitetura",
+		"Sets": {
+		}
+	},
+	"ELE": {
+		"Nome": "Eletrica",
+		"Sets": {
+		}
+	}
+}

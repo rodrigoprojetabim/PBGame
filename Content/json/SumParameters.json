@@ -1,0 +1,8 @@
+{
+	"SumParameters": {
+		"Área" : "m²",
+		"Perímetro" : "m",
+		"Volume": "m³",
+		"Comprimento": "m"
+	}
+}
