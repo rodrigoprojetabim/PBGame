@@ -12,7 +12,7 @@
 	"SupportURL": "",
 	"EngineVersion": "4.19.0",
 	"CanContainContent": false,
-	"Installed": true,
+	"Installed": false,
 	"Modules": [
 		{
 			"Name": "ProjetaBimPlugin",

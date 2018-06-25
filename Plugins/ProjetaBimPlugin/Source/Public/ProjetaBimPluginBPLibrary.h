@@ -55,4 +55,6 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "Utilities")
 	static FString GetActorsStreamingLevelName(AActor* Actor);
 
+	UFUNCTION(BlueprintPure, Category = "Utilities")
+	static int32 Return42(); 
 };

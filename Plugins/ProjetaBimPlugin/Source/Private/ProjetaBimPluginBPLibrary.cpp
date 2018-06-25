@@ -235,3 +235,9 @@ FString UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(AActor* Actor)
 	}
 	return FString();
 }
+
+
+int32 UProjetaBimPluginBPLibrary::Return42()
+{
+	return 42;
+}
