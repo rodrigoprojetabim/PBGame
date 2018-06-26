@@ -40,7 +40,7 @@ void APBGameMode::InitializeSetSelectionMap()
 	FString JsonString;
 	if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
 	{
-		UE_LOG(LogPB, Fatal, TEXT("Arquivo Json não encontrado: %s"), *JsonFilePath);
+		UE_LOG(LogPB, Fatal, TEXT("Arquivo Json nao encontrado: %s"), *JsonFilePath);
 		return;
 	}
 	TSharedRef<TJsonReader<> > JsonReader = TJsonReaderFactory<>::Create(JsonString);
@@ -117,7 +117,7 @@ void APBGameMode::InitializeSetSelectionMap()
 		}
 		else //mesh added manually in editor
 		{ 
-			UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem um ID válido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."), *MeshName);
+			UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."), *MeshName);
 			AddStaticMeshToSetSelection(TEXT("MOB_Outros"), Mesh);
 		}
 	}
