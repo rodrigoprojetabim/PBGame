@@ -12,11 +12,15 @@
 	"ARQ": {
 		"Nome": "Arquitetura",
 		"Sets": {
+			"alvenaria" : "Alvenaria",
 		}
 	},
 	"ELE": {
 		"Nome": "Eletrica",
-		"Sets": {
-		}
+		"Sets": {}
+	},
+	"MOB": {
+		"Nome": "Mobiliária",
+		"Sets": {}
 	}
 }

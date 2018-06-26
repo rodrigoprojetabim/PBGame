@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "PBGameMode.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogPB, Log, All);
+
 USTRUCT(BlueprintType)
 struct FSetSelection
 {
@@ -22,6 +24,15 @@ struct FSetSelection
 	/** current opacity for this Set */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float CurrentOpacity;
+
+	/** Meshes in this SetSelection */
+	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	TArray<AStaticMeshActor*> Meshes;
+
+	FSetSelection()
+	{
+		CurrentOpacity = 1.0f;
+	}
 };
 
 USTRUCT(BlueprintType)
@@ -43,11 +54,15 @@ struct FDiscipline
 };
 
 USTRUCT(BlueprintType)
-struct FStaticMeshArray
+struct FSetSelectionMap
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** Discipline identifier (ARQ, EST, etc.) */
+	/** SetSelection identifier */
+	UPROPERTY(BlueprintReadOnly, Category = "Default")
+	FString Identifier;
+
+	/** Meshes in this SetSelection */
 	UPROPERTY(BlueprintReadOnly, Category = "Default")
 	TArray<AStaticMeshActor*> Meshes;
 };
@@ -57,17 +72,35 @@ class APBGameMode : public AGameModeBase
 {
 	GENERATED_UCLASS_BODY()
 
-	public:
+private:
+
+	FName SetSelectionDefinedTag;
+	FName AddedToSMMapTag;
+
+protected:
+
+	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
+	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh);
+
+public:
 	
 	APBGameMode();
 
+	UFUNCTION(BlueprintCallable, Category="ProjetaBIM")
+	void InitializeSetSelectionMap();
+
+	/** note: returns a copy! */
+	UFUNCTION(BlueprintPure, Category = "ProjetaBIM")
+	bool GetSetSelection(const FString& SetIdentifier, FSetSelection& SetSelection);
+
+	/** adds Mesh to SetIdentifier, returns true if success, false if SetIdentifier doesn't exists */
+	bool AddStaticMeshToSetSelection(const FString& SetIdentifier, class AStaticMeshActor* Mesh);
+
 	UPROPERTY(BlueprintReadWrite, Category = "ProjetaBIM")
-	TArray<FDiscipline> Disciplines;
+		TArray<FDiscipline> Disciplines;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjetaBIM")
-		TMap<FString, FStaticMeshArray> StaticMeshCategoriesMap;
-	
-	UPROPERTY(BlueprintReadOnly, Category = "ProjetaBIM")
 		TMap<FString, AStaticMeshActor*> StaticMeshMap;
+
 
 };
