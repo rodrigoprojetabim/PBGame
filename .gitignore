@@ -62,6 +62,7 @@
 /.ue4dependencies
 /Trash/**
 /Binaries/**
+/Buid/**
 /Content/*
 !/Content/UserInterface/
 !/Content/VisGame/
@@ -71,3 +72,5 @@
 !/Content/Splash/
 !/Content/Utilities/
 !/Content/json/
+
+/Source/**
