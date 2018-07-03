@@ -4,10 +4,10 @@
 #include "ProjetaBimPlugin.h"
 #include "Misc/FileHelper.h"
 #include "Engine/Texture2D.h"
-//#include "Json.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "PlatformFilemanager.h"
+#include "Runtime/XmlParser/Public/XmlParser.h"
 
 UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -236,8 +236,39 @@ FString UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(AActor* Actor)
 	return FString();
 }
 
-
-int32 UProjetaBimPluginBPLibrary::Return42()
+void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& DatasmithPath, UPARAM(ref) TArray<FString>& GlassTags, TArray<FString>& OutMaterialNames, TArray<bool>& OutIsOpaque)
 {
-	return 42;
+	const FXmlFile XmlFile(*DatasmithPath);
+
+	if (XmlFile.IsValid())
+	{
+		const FXmlNode* RootNode = XmlFile.GetRootNode();
+
+		if (RootNode != nullptr)
+		{
+			const TArray<FXmlNode*> AllNodes = RootNode->GetChildrenNodes();
+			for (auto Node : AllNodes)
+			{
+				if (Node->GetTag() == TEXT("Material"))
+				{
+					const TArray<FXmlAttribute> Attrs = Node->GetAttributes();
+					if (Attrs.Num() > 0)
+					{
+						//index 0 is always material name
+						const FString& MatName = Attrs[0].GetValue();
+						OutMaterialNames.Add(MatName);
+						bool bIsOpaque = true;
+						for (auto GlassTag : GlassTags)
+						{
+							if (MatName.Find(GlassTag) != INDEX_NONE)
+							{
+								bIsOpaque = false;
+							}
+						}
+						OutIsOpaque.Add(bIsOpaque);
+					}
+				}
+			}
+		}
+	}
 }

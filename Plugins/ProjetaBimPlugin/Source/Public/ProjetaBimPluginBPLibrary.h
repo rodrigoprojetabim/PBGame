@@ -56,5 +56,5 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	static FString GetActorsStreamingLevelName(AActor* Actor);
 
 	UFUNCTION(BlueprintPure, Category = "Utilities")
-	static int32 Return42(); 
+	static void GetMaterialDataFromDatasmith(const FString& DatasmithPath, UPARAM(ref) TArray<FString>& GlassTags, TArray<FString>& OutMaterialNames, TArray<bool>& OutIsOpaque);
 };

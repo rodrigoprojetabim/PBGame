@@ -29,7 +29,7 @@ public class ProjetaBimPlugin : ModuleRules
         PublicDependencyModuleNames.AddRange(
             new string[]
             {
-                "Core", "Json", "ImageWrapper", "JsonUtilities" ,
+                "Core", "Json", "ImageWrapper", "JsonUtilities" , "XmlParser", 
             }
             );
 
