@@ -8,6 +8,7 @@
 #include "IImageWrapperModule.h"
 #include "PlatformFilemanager.h"
 #include "Runtime/XmlParser/Public/XmlParser.h"
+#include "Materials/MaterialInstance.h"
 
 UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
