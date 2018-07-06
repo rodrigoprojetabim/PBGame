@@ -57,4 +57,8 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintPure, Category = "Utilities")
 	static void GetMaterialDataFromDatasmith(const FString& DatasmithPath, UPARAM(ref) TArray<FString>& GlassTags, TArray<FString>& OutMaterialNames, TArray<bool>& OutIsOpaque);
+
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "pie editor"))
+	static void SetOverridenLightmapResolution(class UStaticMeshComponent* SMC, bool bNewOverrideLightmapRes, int32 OverridenLightmapRes);
+
 };

@@ -9,6 +9,7 @@
 #include "PlatformFilemanager.h"
 #include "Runtime/XmlParser/Public/XmlParser.h"
 #include "Materials/MaterialInstance.h"
+#include "Components/StaticMeshComponent.h"
 
 UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -271,5 +272,14 @@ void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& Dat
 				}
 			}
 		}
+	}
+}
+
+void UProjetaBimPluginBPLibrary::SetOverridenLightmapResolution(UStaticMeshComponent * SMC, bool bNewOverrideLightmapRes, int32 OverridenLightmapRes)
+{
+	if (SMC != nullptr)
+	{
+		SMC->bOverrideLightMapRes = bNewOverrideLightmapRes;
+		SMC->OverriddenLightMapRes = OverridenLightmapRes;
 	}
 }

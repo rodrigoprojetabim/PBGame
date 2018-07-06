@@ -51,8 +51,6 @@
 
 # Engine intermediates
 /Intermediate/**
-/Plugins/**/Intermediate/**
-
 
 # Ignore any saved local files
 /Saved/**
@@ -60,6 +58,7 @@
 
 # Other binaries
 /.ue4dependencies
+/*
 /Trash/**
 /Binaries/**
 /Buid/**
@@ -67,10 +66,8 @@
 !/Content/UserInterface/
 !/Content/VisGame/
 !/Content/Materials/
-!/Content/Images/
-/Content/Images/*/
-!/Content/Splash/
 !/Content/Utilities/
 !/Content/json/
 
 /Source/**
+/Plugins/**
