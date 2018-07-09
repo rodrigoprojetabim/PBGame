@@ -70,3 +70,4 @@
 
 /Source/**
 /Plugins/**
+!/Plugins/ProjetaBimPlugin/Source/
