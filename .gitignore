@@ -58,7 +58,6 @@
 
 # Other binaries
 /.ue4dependencies
-/*
 /Trash/**
 /Binaries/**
 /Buid/**
