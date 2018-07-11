@@ -61,4 +61,8 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "pie editor"))
 	static void SetOverridenLightmapResolution(class UStaticMeshComponent* SMC, bool bNewOverrideLightmapRes, int32 OverridenLightmapRes);
 
+	/** saves a screenshot of the viewport to disk. Path is relative to /Content. Do NOT provide the filename suffix. */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "viewport"))
+	static void SaveScreenshot(const FString& FilePath, bool bShowUI);
+
 };

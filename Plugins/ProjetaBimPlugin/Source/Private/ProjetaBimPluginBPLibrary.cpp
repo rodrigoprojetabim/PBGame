@@ -283,3 +283,9 @@ void UProjetaBimPluginBPLibrary::SetOverridenLightmapResolution(UStaticMeshCompo
 		SMC->OverriddenLightMapRes = OverridenLightmapRes;
 	}
 }
+
+void UProjetaBimPluginBPLibrary::SaveScreenshot(const FString & FilePath, bool bShowUI)
+{
+	const FString& FullPath = FPaths::ProjectContentDir() + FilePath;
+	FScreenshotRequest::RequestScreenshot(FullPath, bShowUI, false);
+}
