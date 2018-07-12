@@ -145,7 +145,7 @@ bool APBGameMode::AddStaticMeshToSetSelection(const FString & SetIdentifier, ASt
 	{
 		for (auto& Set : Discipline.Sets)
 		{
-			if (Set.Identifier == SetIdentifier)
+			if (Set.Identifier.Equals(SetIdentifier,ESearchCase::IgnoreCase))
 			{
 				Mesh->Tags.Add(SetSelectionDefinedTag);
 				Set.Meshes.Add(Mesh);

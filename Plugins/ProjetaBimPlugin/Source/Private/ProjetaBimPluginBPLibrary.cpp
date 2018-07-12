@@ -238,7 +238,7 @@ FString UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(AActor* Actor)
 	return FString();
 }
 
-void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& DatasmithPath, UPARAM(ref) TArray<FString>& GlassTags, TArray<FString>& OutMaterialNames, TArray<bool>& OutIsOpaque)
+void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& DatasmithPath, UPARAM(ref) TArray<FString>& GlassTags, TArray<FString>& OutMaterialNames, TArray<bool>& OutIsOpaque, TArray<FLinearColor>& OutColors)
 {
 	const FXmlFile XmlFile(*DatasmithPath);
 
@@ -268,6 +268,14 @@ void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& Dat
 							}
 						}
 						OutIsOpaque.Add(bIsOpaque);
+
+						const FXmlNode* ShaderNode = Node->GetFirstChildNode();
+						const FXmlNode* ColorNode = ShaderNode->FindChildNode(TEXT("Diffusecolor"));
+						const TArray<FXmlAttribute> Colors = ColorNode->GetAttributes();
+						const float Red = FCString::Atof(*Colors[0].GetValue());
+						const float Green = FCString::Atof(*Colors[1].GetValue());
+						const float Blue = FCString::Atof(*Colors[2].GetValue());
+						OutColors.Add(FLinearColor(Red, Green, Blue));
 					}
 				}
 			}
