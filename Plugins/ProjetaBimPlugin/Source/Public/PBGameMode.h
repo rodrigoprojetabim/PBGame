@@ -77,9 +77,6 @@ private:
 	FName SetSelectionDefinedTag;
 	FName AddedToSMMapTag;
 
-	/** disciplines that need to be processed into the SetSelection map */
-	TArray<FString> DisciplinesToProcess;
-
 	class ULevelStreaming* GetStreamingLevelFromName(const FString& LevelName);
 
 protected:
@@ -87,10 +84,13 @@ protected:
 	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
 	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh);
 
-	virtual void BeginPlay() override;
 public:
 	
 	APBGameMode();
+
+	/** disciplines that need to be processed into the SetSelection map */
+	UPROPERTY(BlueprintReadWrite, Category = "ProjetaBIM")
+	TArray<FString> DisciplinesToProcess;
 
 	UFUNCTION(BlueprintCallable, Category="ProjetaBIM")
 	void InitializeSetSelectionMap();
