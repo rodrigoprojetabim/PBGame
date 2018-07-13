@@ -19,22 +19,17 @@ APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
 
 ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelName)
 {
-	UE_LOG(LogPB, Log, TEXT("Procurando level %s...."), *LevelName);
 	for (auto Level : GetWorld()->StreamingLevels)
 	{
-		FString ThisLevelName = Level->GetWorldAssetPackageFName().ToString();
-		
+		FString ThisLevelName = Level->GetWorldAssetPackageFName().ToString();		
 		int32 SlashPos = ThisLevelName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 		ThisLevelName = ThisLevelName.RightChop(SlashPos + 1);
 
-		UE_LOG(LogPB, Log, TEXT("    Testando %s, pkg name: %s...."), *ThisLevelName, *Level->PackageNameToLoad.ToString());
 		if (ThisLevelName == LevelName)
 		{
-			UE_LOG(LogPB, Log, TEXT("    ACHOU: %s"), *ThisLevelName);
 			return Level;
 		}
 	}
-	UE_LOG(LogPB, Log, TEXT("    NAO ACHOU LEVEL %s"), *LevelName);
 	return nullptr;
 }
 
