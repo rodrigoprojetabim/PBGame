@@ -9,6 +9,7 @@
 #include "PlatformFilemanager.h"
 #include "Runtime/XmlParser/Public/XmlParser.h"
 #include "Materials/MaterialInstance.h"
+#include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
 
 UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
@@ -223,8 +224,18 @@ bool UProjetaBimPluginBPLibrary::IsPIE(AActor * WorldContext)
 void UProjetaBimPluginBPLibrary::RenameActor(AActor* Actor, const FString& NewName)
 {
 #if WITH_EDITOR
-	Actor->Rename(*NewName);
-	Actor->SetActorLabel(NewName);
+	if (Actor != nullptr)
+	{
+		for (TActorIterator<AActor> ActorItr(Actor->GetWorld()); ActorItr; ++ActorItr)
+		{
+			if (*ActorItr->GetActorLabel() == NewName)
+			{
+				return;
+			}
+		}
+		Actor->Rename(*NewName);
+		Actor->SetActorLabel(NewName);
+	}
 #endif
 }
 

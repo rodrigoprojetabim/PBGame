@@ -45,6 +45,7 @@
 **/*.framework/**
 *.uproject
 *.log
+*.lib
 
 # Derived data cache is never checked in
 /DerivedDataCache/**
