@@ -22,7 +22,8 @@ ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelNa
 	UE_LOG(LogPB, Log, TEXT("Procurando level %s...."), *LevelName);
 	for (auto Level : GetWorld()->StreamingLevels)
 	{
-		FString ThisLevelName = Level->PackageNameToLoad.ToString();
+		FString ThisLevelName = Level->GetWorldAssetPackageFName().ToString();
+		
 		int32 SlashPos = ThisLevelName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 		ThisLevelName = ThisLevelName.RightChop(SlashPos + 1);
 
