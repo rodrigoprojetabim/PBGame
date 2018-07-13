@@ -77,11 +77,17 @@ private:
 	FName SetSelectionDefinedTag;
 	FName AddedToSMMapTag;
 
+	/** disciplines that need to be processed into the SetSelection map */
+	TArray<FString> DisciplinesToProcess;
+
+	class ULevelStreaming* GetStreamingLevelFromName(const FString& LevelName);
+
 protected:
 
 	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
 	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh);
 
+	virtual void BeginPlay() override;
 public:
 	
 	APBGameMode();
@@ -97,10 +103,8 @@ public:
 	bool AddStaticMeshToSetSelection(const FString& SetIdentifier, class AStaticMeshActor* Mesh);
 
 	UPROPERTY(BlueprintReadWrite, Category = "ProjetaBIM")
-		TArray<FDiscipline> Disciplines;
+	TArray<FDiscipline> Disciplines;
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjetaBIM")
-		TMap<FString, AStaticMeshActor*> StaticMeshMap;
-
-
+	TMap<FString, AStaticMeshActor*> StaticMeshMap;
 };
