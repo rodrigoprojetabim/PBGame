@@ -67,6 +67,7 @@
 !/Content/VisGame/
 !/Content/Materials/
 !/Content/Utilities/
+!/Content/ExplorationMode/
 
 /Source/**
 /Plugins/**
