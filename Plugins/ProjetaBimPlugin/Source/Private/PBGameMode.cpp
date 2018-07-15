@@ -24,6 +24,7 @@ ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelNa
 		FString ThisLevelName = Level->GetWorldAssetPackageFName().ToString();		
 		int32 SlashPos = ThisLevelName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
 		ThisLevelName = ThisLevelName.RightChop(SlashPos + 1);
+		ThisLevelName = ThisLevelName.Replace(TEXT("UEDPIE_0_"), TEXT(""));
 
 		if (ThisLevelName == LevelName)
 		{
@@ -76,7 +77,6 @@ void APBGameMode::InitializeSetSelectionMap()
 			if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
 			{
 				UE_LOG(LogPB, Warning, TEXT("Arquivo Json nao encontrado: %s"), *JsonFilePath);
-				continue;
 			}
 			TSharedRef<TJsonReader<> > JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
@@ -84,7 +84,6 @@ void APBGameMode::InitializeSetSelectionMap()
 				!JsonObject.IsValid())
 			{
 				UE_LOG(LogPB, Warning, TEXT("Erro de leitura no arquivo %s, verifique a sintaxe."), *JsonFilePath);
-				continue;
 			}
 
 
@@ -106,7 +105,13 @@ void APBGameMode::InitializeSetSelectionMap()
 
 					const int32 OBJ_Position = MeshName.Find(TEXT("OBJ_"));
 
-					if (OBJ_Position != -1) //mesh came from Revit
+					if (!JsonObject.IsValid())
+					{
+						const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
+						UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem json ou json invalido, adicionando-o ao set %s."), *MeshName, *MeshDiscipline);
+						AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
+					}
+					else if (OBJ_Position != -1) //mesh came from Revit
 					{
 						const FString ObjectID = MeshName.RightChop(OBJ_Position + 4);
 
