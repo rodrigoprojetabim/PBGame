@@ -69,6 +69,7 @@
 !/Content/Utilities/
 !/Content/ExplorationMode/
 !/Content/Media/
+!/Content/Blueprints/
 
 /Source/**
 /Plugins/**
