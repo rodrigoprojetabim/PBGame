@@ -40,7 +40,12 @@ FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh)
 	{
 		return TEXT("");
 	}
-	const FString LevelName = Mesh->GetLevel()->GetOuter()->GetName();
+	ULevel* MeshLevel = Mesh->GetLevel();
+	if (MeshLevel == nullptr || MeshLevel->bIsLightingScenario)
+	{
+		return TEXT("MOB");
+	}
+	const FString LevelName = MeshLevel->GetOuter()->GetName();
 	const int32 UnderlineLoc = LevelName.Find(TEXT("_"));
 	if (UnderlineLoc != -1)
 	{
