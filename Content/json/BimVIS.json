@@ -1,4 +1,5 @@
 {
+	"Start Level" : "TestMap",
 	"SumParameters": {
 		"Área" : "m²",
 		"Perímetro" : "m",
