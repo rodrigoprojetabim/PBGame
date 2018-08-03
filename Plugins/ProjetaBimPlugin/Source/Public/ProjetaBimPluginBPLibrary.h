@@ -81,4 +81,8 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
 	static void AddLogEntry(const FString& Message);
 
+	/** returns true if map exists, false otherwise */
+	UFUNCTION(BlueprintPure, Category = "Utilities", meta = (Keywords = "test check level", WorldContext = "WorldContextObject") )
+	static bool DoesMapExists(const UObject* WorldContextObject, FName LevelName);
+
 };

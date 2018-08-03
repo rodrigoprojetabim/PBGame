@@ -309,7 +309,6 @@ void UProjetaBimPluginBPLibrary::OpenSystemPopupErrorWindow(const FString & Mess
 		MB_ICONERROR | MB_OK
 	);
 #endif
-	//FGenericPlatformMisc::RequestExit(false);
 }
 
 void UProjetaBimPluginBPLibrary::OpenSystemPopupWarningWindow(const FString & Message)
@@ -339,4 +338,20 @@ void UProjetaBimPluginBPLibrary::AddLogEntry(const FString & Message)
 	const FString& FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/Log.txt");
 	const FString LineToAdd = Message + TEXT("\n");
 	FFileHelper::SaveStringToFile(*LineToAdd, *FilePath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
+}
+
+bool UProjetaBimPluginBPLibrary::DoesMapExists(const UObject* WorldContextObject, FName LevelName)
+{
+	UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull);
+	if (World == nullptr)
+	{
+		return true;
+	}
+
+	const ETravelType TravelType = TRAVEL_Absolute;
+	FWorldContext &WorldContext = GEngine->GetWorldContextFromWorldChecked(World);
+	FString Cmd = LevelName.ToString();
+	FURL TestURL(&WorldContext.LastURL, *Cmd, TravelType);
+	TestURL.Map = Cmd;
+	return GEngine->MakeSureMapNameIsValid(TestURL.Map);
 }
