@@ -65,4 +65,20 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "viewport"))
 	static void SaveScreenshot(const FString& FilePath, bool bShowUI);
 
+	/** opens a system popup window with the error Message, then exits the game */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "dialog log warning assert debug create fatal"))
+	static void OpenSystemPopupErrorWindow(const FString& Message);
+
+	/** opens a system popup window with the warning Message */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "dialog log warning assert debug create"))
+	static void OpenSystemPopupWarningWindow(const FString& Message);
+
+	/** clears the log file (Log.txt) */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
+	static void EmptyLogFile();
+
+	/** adds Message to the Log.txt file */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
+	static void AddLogEntry(const FString& Message);
+
 };

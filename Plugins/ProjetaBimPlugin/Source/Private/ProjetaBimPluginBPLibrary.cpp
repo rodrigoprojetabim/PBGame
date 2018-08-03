@@ -11,13 +11,11 @@
 #include "Materials/MaterialInstance.h"
 #include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
+#include "PBGameMode.h"
 
-UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
-	: Super(ObjectInitializer)
-{
-
-}
-
+#if PLATFORM_WINDOWS
+#include <windows.h>
+#endif
 
 EImageFormat GetFormatFromFilename(const FString& FilePath)
 {
@@ -46,9 +44,17 @@ EImageFormat GetFormatFromFilename(const FString& FilePath)
 	{
 		return EImageFormat::ICNS;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Unknown file format for file %s"), *FilePath);
+	const FString Msg = TEXT("ALERTA: Formato de imagem desconhecido para o arquivo ") + FilePath;
+	UProjetaBimPluginBPLibrary::AddLogEntry(Msg);
 	return EImageFormat::JPEG;
 }
+
+UProjetaBimPluginBPLibrary::UProjetaBimPluginBPLibrary(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer)
+{
+
+}
+
 
 UTexture2D* UProjetaBimPluginBPLibrary::LoadTexture2DFromFile(const FString& FilePath, bool& IsValid, int32& Width, int32& Height, bool bAbsolute)
 {
@@ -88,6 +94,7 @@ UTexture2D* UProjetaBimPluginBPLibrary::LoadTexture2DFromFile(const FString& Fil
 			LoadedT2D->PlatformData->Mips[0].BulkData.Unlock();
 
 			//Update
+#define UpdateResource UpdateResource
 			LoadedT2D->UpdateResource();
 		}
 	}
@@ -146,27 +153,7 @@ void UProjetaBimPluginBPLibrary::SortStringArray(UPARAM(ref) TArray<FString>& St
 
 void UProjetaBimPluginBPLibrary::SaveStringToFile(FString Filename, FString StringToSave)
 {
-	FString FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/") + Filename;
-	/*
-	TSharedPtr<FJsonObject> JsonObject;
-	TSharedRef<TJsonReader<> > JsonReader = TJsonReaderFactory<>::Create(StringToSave);
-
-	if (FJsonSerializer::Deserialize(JsonReader, JsonObject))
-	{
-
-	FArchive* SaveFile = IFileManager::Get().CreateFileWriter(*FilePath);
-	if (!SaveFile)
-	{
-	return;
-	}
-	TSharedRef<TJsonWriter<> > JsonWriter = TJsonWriterFactory<>::Create(SaveFile);
-	JsonWriter->WriteObjectStart();
-	JsonWriter->
-	JsonWriter->WriteObjectEnd();
-	JsonWriter->Close();
-	delete SaveFile;
-	}
-	*/
+	const FString& FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/") + Filename;
 	FFileHelper::SaveStringToFile(StringToSave, *FilePath);
 }
 
@@ -307,4 +294,49 @@ void UProjetaBimPluginBPLibrary::SaveScreenshot(const FString & FilePath, bool b
 {
 	const FString& FullPath = FPaths::ProjectContentDir() + FilePath;
 	FScreenshotRequest::RequestScreenshot(FullPath, bShowUI, false);
+}
+
+void UProjetaBimPluginBPLibrary::OpenSystemPopupErrorWindow(const FString & Message)
+{
+	AddLogEntry(TEXT("ERRO: ") + Message);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *Message);
+
+#if PLATFORM_WINDOWS
+	MessageBox(
+		NULL,
+		(LPCWSTR)*Message,
+		(LPCWSTR)L"Erro",
+		MB_ICONERROR | MB_OK
+	);
+#endif
+	//FGenericPlatformMisc::RequestExit(false);
+}
+
+void UProjetaBimPluginBPLibrary::OpenSystemPopupWarningWindow(const FString & Message)
+{
+	AddLogEntry(TEXT("ALERTA: ") + Message);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, *Message);
+
+#if PLATFORM_WINDOWS
+	MessageBox(
+		NULL,
+		(LPCWSTR)*Message,
+		(LPCWSTR)L"Alerta",
+		MB_ICONWARNING | MB_OK
+	);
+#endif
+}
+
+void UProjetaBimPluginBPLibrary::EmptyLogFile()
+{
+	const FString& FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/Log.txt");
+#define DeleteFile DeleteFile
+	FPlatformFileManager::Get().GetPlatformFile().DeleteFile(*FilePath);
+}
+
+void UProjetaBimPluginBPLibrary::AddLogEntry(const FString & Message)
+{
+	const FString& FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/Log.txt");
+	const FString LineToAdd = Message + TEXT("\n");
+	FFileHelper::SaveStringToFile(*LineToAdd, *FilePath, FFileHelper::EEncodingOptions::AutoDetect, &IFileManager::Get(), EFileWrite::FILEWRITE_Append);
 }

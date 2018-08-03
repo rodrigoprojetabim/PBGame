@@ -6,8 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "PBGameMode.generated.h"
 
-DECLARE_LOG_CATEGORY_EXTERN(LogPB, Log, All);
-
 USTRUCT(BlueprintType)
 struct FSetSelection
 {
@@ -78,11 +76,17 @@ private:
 	FName AddedToSMMapTag;
 
 	class ULevelStreaming* GetStreamingLevelFromName(const FString& LevelName);
-
+	
 protected:
 
 	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
 	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh);
+
+	/** returns the current level's name */
+	FString GetPersistentLevelName();
+
+	/** removes the discipline from LevelName, e.g. TESTMAP_ARQ becomes TESTMAP */
+	FString GetLevelNameWithoutDisciplineSuffix(const FString& LevelName);
 
 public:
 	
@@ -107,4 +111,5 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, Category = "ProjetaBIM")
 	TMap<FString, AStaticMeshActor*> StaticMeshMap;
+	
 };

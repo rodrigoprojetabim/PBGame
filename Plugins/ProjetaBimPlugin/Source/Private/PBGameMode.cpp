@@ -7,8 +7,7 @@
 #include "Engine/LevelStreaming.h"
 #include "ProjetaBimPluginBPLibrary.h"
 #include "ProjetaBimPlugin.h"
-
-DEFINE_LOG_CATEGORY(LogPB);
+#include "Platform.h"
 
 APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -54,6 +53,20 @@ FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh)
 	return TEXT("MOB");
 }
 
+FString APBGameMode::GetPersistentLevelName()
+{
+	FString LevelName = GetWorld()->GetMapName();
+	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
+	return LevelName;
+}
+
+FString APBGameMode::GetLevelNameWithoutDisciplineSuffix(const FString& LevelName)
+{
+	FString ThisLevelName = LevelName.Replace(TEXT("UEDPIE_0_"), TEXT(""));
+	int32 SlashPos = ThisLevelName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromStart);
+	return ThisLevelName.RightChop(SlashPos + 1);
+}
+
 /*
 void APBGameMode::BeginPlay()
 {
@@ -76,21 +89,37 @@ void APBGameMode::InitializeSetSelectionMap()
 		ULevelStreaming* Level = GetStreamingLevelFromName(LevelName);
 		if (Level != nullptr && Level->IsLevelVisible())
 		{
+			UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("\n*** Lendo paramatros da disciplina ") + LevelName + TEXT(" ***"));
+
 			TSharedPtr<FJsonObject> JsonObject;
-			const FString JsonFilePath = FPaths::ProjectContentDir() + TEXT("json/") + LevelName + TEXT(".json");
+			FString JsonFilePath = FPaths::ProjectContentDir() + TEXT("json/") + GetPersistentLevelName() + TEXT("/") + LevelName + TEXT(".json");
+			const FString DesiredFilePath = JsonFilePath;
+			bool bFoundJsonFile = true;
 			FString JsonString;
 			if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
 			{
-				UE_LOG(LogPB, Warning, TEXT("Arquivo Json nao encontrado: %s"), *JsonFilePath);
+				JsonFilePath = FPaths::ProjectContentDir() + TEXT("json/") + GetPersistentLevelName() + TEXT("/") + GetLevelNameWithoutDisciplineSuffix(LevelName) + TEXT(".json");
+				if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
+				{
+					JsonFilePath = FPaths::ProjectContentDir() + TEXT("json/") + GetPersistentLevelName() + TEXT("/") + GetPersistentLevelName() + TEXT(".json");
+					if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
+					{
+						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Arquivo Json nao encontrado: ") + DesiredFilePath);
+						bFoundJsonFile = false;
+					}
+				}
 			}
-			TSharedRef<TJsonReader<> > JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
-			if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) ||
-				!JsonObject.IsValid())
+			if (bFoundJsonFile)
 			{
-				UE_LOG(LogPB, Warning, TEXT("Erro de leitura no arquivo %s, verifique a sintaxe."), *JsonFilePath);
-			}
+				TSharedRef<TJsonReader<> > JsonReader = TJsonReaderFactory<>::Create(JsonString);
 
+				if (!FJsonSerializer::Deserialize(JsonReader, JsonObject) ||
+					!JsonObject.IsValid())
+				{
+					UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Erro de leitura, verifique a sintaxe no arquivo ") + JsonFilePath);
+				}
+			}
 
 			for (TActorIterator<AStaticMeshActor> It(GetWorld(), AStaticMeshActor::StaticClass()); It; ++It)
 			{
@@ -113,7 +142,7 @@ void APBGameMode::InitializeSetSelectionMap()
 					if (!JsonObject.IsValid())
 					{
 						const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-						UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem json ou json invalido, adicionando-o ao set %s."), *MeshName, *MeshDiscipline);
+						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem json ou json invalido, adicionando-o ao set ") + MeshDiscipline);
 						AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 					}
 					else if (OBJ_Position != -1) //mesh came from Revit
@@ -133,7 +162,7 @@ void APBGameMode::InitializeSetSelectionMap()
 									{
 										//invalid/undefined SetSelection value
 										const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-										UE_LOG(LogPB, Warning, TEXT("Objeto %s tem valor de SetSelection invalido (%s), adicionando-o ao set %s."), *ObjectID, *SetSelectionValue, *MeshDiscipline);
+										UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" tem valor de SetSelection invalido (") + SetSelectionValue + TEXT("), adicionando-o ao set ") + MeshDiscipline);
 										AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 									}
 								}
@@ -141,7 +170,7 @@ void APBGameMode::InitializeSetSelectionMap()
 								{
 									//has no SetSelection field
 									const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-									UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem campo SetSelection, adicionando-o ao set %s."), *ObjectID, *MeshDiscipline);
+									UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo SetSelection, adicionando-o ao set ") + MeshDiscipline);
 									AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 								}
 							}
@@ -149,25 +178,26 @@ void APBGameMode::InitializeSetSelectionMap()
 							{
 								//has no field Parametros
 								const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-								UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem campo Parametros, adicionando-o ao set %s."), *ObjectID, *MeshDiscipline);
+								UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo Parametros, adicionando-o ao set ") + MeshDiscipline);
 								AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 							}
 						}
 						else
 						{
 							const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-							UE_LOG(LogPB, Warning, TEXT("Objeto %s nao encontrado no json, adicionando-o ao set %s."), *ObjectID, *MeshDiscipline);
+							UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao encontrado no json, adicionando-o ao set ") + MeshDiscipline);
 							AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 						}
 					}
 					else //mesh added manually in editor
 					{
-						UE_LOG(LogPB, Warning, TEXT("Objeto %s nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."), *MeshName);
+						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."));
 						AddStaticMeshToSetSelection(TEXT("MOB_Outros"), Mesh);
 					}
 				}
 			}
 			ProcessedDisciplines.Add(LevelName);
+			UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("*** Concluida a leitura da disciplina ") + LevelName + TEXT(" ***\n"));
 		}
 	}
 	for (auto Processed : ProcessedDisciplines)
