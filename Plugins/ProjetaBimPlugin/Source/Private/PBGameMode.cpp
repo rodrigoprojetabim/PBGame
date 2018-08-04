@@ -104,7 +104,7 @@ void APBGameMode::InitializeSetSelectionMap()
 					JsonFilePath = FPaths::ProjectContentDir() + TEXT("json/") + GetPersistentLevelName() + TEXT("/") + GetPersistentLevelName() + TEXT(".json");
 					if (!FFileHelper::LoadFileToString(JsonString, *JsonFilePath))
 					{
-						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Arquivo Json nao encontrado: ") + DesiredFilePath);
+						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Arquivo Json nao encontrado: ") + DesiredFilePath + TEXT("; objetos dessa disciplina irao para o set Outros"));
 						bFoundJsonFile = false;
 					}
 				}
@@ -142,7 +142,6 @@ void APBGameMode::InitializeSetSelectionMap()
 					if (!JsonObject.IsValid())
 					{
 						const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem json ou json invalido, adicionando-o ao set ") + MeshDiscipline);
 						AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 					}
 					else if (OBJ_Position != -1) //mesh came from Revit
