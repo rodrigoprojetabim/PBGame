@@ -153,7 +153,7 @@ void UProjetaBimPluginBPLibrary::SortStringArray(UPARAM(ref) TArray<FString>& St
 
 void UProjetaBimPluginBPLibrary::SaveStringToFile(FString Filename, FString StringToSave)
 {
-	const FString& FilePath = FPaths::GetPath(FPaths::GetProjectFilePath()) + TEXT("/") + Filename;
+	const FString& FilePath = FPaths::GetPath(FPaths::ProjectContentDir()) + TEXT("/") + Filename;
 	FFileHelper::SaveStringToFile(StringToSave, *FilePath);
 }
 
