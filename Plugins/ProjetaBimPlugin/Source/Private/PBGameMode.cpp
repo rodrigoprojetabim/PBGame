@@ -16,7 +16,7 @@ APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
 	AddedToSMMapTag = FName(TEXT("AddedToSMMap"));
 }
 
-ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelName)
+ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelName) const
 {
 	for (auto Level : GetWorld()->StreamingLevels)
 	{
@@ -33,7 +33,7 @@ ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelNa
 	return nullptr;
 }
 
-FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh)
+FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh) const
 {
 	if (Mesh == nullptr)
 	{
@@ -53,14 +53,14 @@ FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh)
 	return TEXT("MOB");
 }
 
-FString APBGameMode::GetPersistentLevelName()
+FString APBGameMode::GetPersistentLevelName() const
 {
 	FString LevelName = GetWorld()->GetMapName();
 	LevelName.RemoveFromStart(GetWorld()->StreamingLevelsPrefix);
 	return LevelName;
 }
 
-FString APBGameMode::GetLevelNameWithoutDisciplineSuffix(const FString& LevelName)
+FString APBGameMode::GetLevelNameWithoutDisciplineSuffix(const FString& LevelName) const
 {
 	FString ThisLevelName = LevelName.Replace(TEXT("UEDPIE_0_"), TEXT(""));
 	int32 SlashPos = ThisLevelName.Find(TEXT("_"), ESearchCase::IgnoreCase, ESearchDir::FromStart);
@@ -205,7 +205,7 @@ void APBGameMode::InitializeSetSelectionMap()
 	}
 }
 
-bool APBGameMode::GetSetSelection(const FString & SetIdentifier, FSetSelection& SetSelection)
+bool APBGameMode::GetSetSelection(const FString & SetIdentifier, FSetSelection& SetSelection) const
 {
 	for (auto& Discipline : Disciplines)
 	{

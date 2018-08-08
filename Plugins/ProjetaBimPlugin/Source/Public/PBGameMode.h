@@ -75,18 +75,18 @@ private:
 	FName SetSelectionDefinedTag;
 	FName AddedToSMMapTag;
 
-	class ULevelStreaming* GetStreamingLevelFromName(const FString& LevelName);
+	class ULevelStreaming* GetStreamingLevelFromName(const FString& LevelName) const;
 	
 protected:
 
 	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
-	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh);
+	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh) const;
 
 	/** returns the current level's name */
-	FString GetPersistentLevelName();
+	FString GetPersistentLevelName() const;
 
 	/** removes the discipline from LevelName, e.g. TESTMAP_ARQ becomes TESTMAP */
-	FString GetLevelNameWithoutDisciplineSuffix(const FString& LevelName);
+	FString GetLevelNameWithoutDisciplineSuffix(const FString& LevelName) const;
 
 public:
 	
@@ -101,7 +101,7 @@ public:
 
 	/** note: returns a copy! */
 	UFUNCTION(BlueprintPure, Category = "ProjetaBIM")
-	bool GetSetSelection(const FString& SetIdentifier, FSetSelection& SetSelection);
+	bool GetSetSelection(const FString& SetIdentifier, FSetSelection& SetSelection) const;
 
 	/** adds Mesh to SetIdentifier, returns true if success, false if SetIdentifier doesn't exists */
 	bool AddStaticMeshToSetSelection(const FString& SetIdentifier, class AStaticMeshActor* Mesh);
