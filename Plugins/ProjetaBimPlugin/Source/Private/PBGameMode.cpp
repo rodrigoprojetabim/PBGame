@@ -161,7 +161,7 @@ void APBGameMode::InitializeSetSelectionMap()
 									{
 										//invalid/undefined SetSelection value
 										const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-										UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" tem valor de SetSelection invalido (") + SetSelectionValue + TEXT("), adicionando-o ao set ") + MeshDiscipline);
+										//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" tem valor de SetSelection invalido (") + SetSelectionValue + TEXT("), adicionando-o ao set ") + MeshDiscipline);
 										AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 									}
 								}
@@ -169,7 +169,7 @@ void APBGameMode::InitializeSetSelectionMap()
 								{
 									//has no SetSelection field
 									const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-									UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo SetSelection, adicionando-o ao set ") + MeshDiscipline);
+									//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo SetSelection, adicionando-o ao set ") + MeshDiscipline);
 									AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 								}
 							}
@@ -177,20 +177,20 @@ void APBGameMode::InitializeSetSelectionMap()
 							{
 								//has no field Parametros
 								const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-								UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo Parametros, adicionando-o ao set ") + MeshDiscipline);
+								//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo Parametros, adicionando-o ao set ") + MeshDiscipline);
 								AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 							}
 						}
 						else
 						{
 							const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-							UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao encontrado no json, adicionando-o ao set ") + MeshDiscipline);
+							//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao encontrado no json, adicionando-o ao set ") + MeshDiscipline);
 							AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
 						}
 					}
 					else //mesh added manually in editor
 					{
-						UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."));
+						//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."));
 						AddStaticMeshToSetSelection(TEXT("MOB_Outros"), Mesh);
 					}
 				}
