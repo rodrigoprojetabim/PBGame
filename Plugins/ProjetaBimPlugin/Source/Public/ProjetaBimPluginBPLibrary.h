@@ -85,4 +85,6 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintPure, Category = "Utilities", meta = (Keywords = "test check level", WorldContext = "WorldContextObject") )
 	static bool DoesMapExists(const UObject* WorldContextObject, FName LevelName);
 
+	UFUNCTION(BlueprintPure, Category = "Utilities", meta = (Keywords = "closest nearest"))
+	static float GetDistanceToCollision(UPrimitiveComponent* CollisionComponent, const FVector& Point, FVector& ClosestPointOnCollision);
 };

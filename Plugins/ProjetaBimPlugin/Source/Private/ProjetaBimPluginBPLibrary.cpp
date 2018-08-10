@@ -355,3 +355,12 @@ bool UProjetaBimPluginBPLibrary::DoesMapExists(const UObject* WorldContextObject
 	TestURL.Map = Cmd;
 	return GEngine->MakeSureMapNameIsValid(TestURL.Map);
 }
+
+float UProjetaBimPluginBPLibrary::GetDistanceToCollision(UPrimitiveComponent * CollisionComponent, const FVector & Point, FVector & ClosestPointOnCollision)
+{
+	if (CollisionComponent == nullptr)
+	{
+		return -1;
+	}
+	return CollisionComponent->GetDistanceToCollision(Point, ClosestPointOnCollision);
+}
