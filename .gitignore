@@ -1,4 +1,4 @@
-#
+# teste
 # This file tells Git about engine files that never really belong in source control.  They are usually build products, log 
 # files and intermediate files generated from a compiler or the engine runtime.
 #
