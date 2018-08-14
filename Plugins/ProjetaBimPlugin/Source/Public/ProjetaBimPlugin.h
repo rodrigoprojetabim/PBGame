@@ -3,7 +3,7 @@
 #pragma once
 
 #include "Engine/GameEngine.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 
 class FProjetaBimPluginModule : public IModuleInterface
 {

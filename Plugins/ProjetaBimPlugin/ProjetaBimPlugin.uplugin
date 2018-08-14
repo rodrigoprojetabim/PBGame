@@ -10,7 +10,7 @@
 	"DocsURL": "",
 	"MarketplaceURL": "",
 	"SupportURL": "",
-	"EngineVersion": "4.19.0",
+	"EngineVersion": "4.20.0",
 	"CanContainContent": false,
 	"Installed": true,
 	"Modules": [
@@ -19,9 +19,7 @@
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault",
 			"WhitelistPlatforms": [
-				"Win64",
-				"Win32",
-				"Android"
+				"Win64"
 			]
 		}
 	]

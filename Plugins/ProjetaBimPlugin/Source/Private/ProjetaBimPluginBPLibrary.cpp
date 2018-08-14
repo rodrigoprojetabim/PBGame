@@ -6,7 +6,7 @@
 #include "Engine/Texture2D.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
-#include "PlatformFilemanager.h"
+#include "HAL/PlatformFilemanager.h"
 #include "Runtime/XmlParser/Public/XmlParser.h"
 #include "Materials/MaterialInstance.h"
 #include "EngineUtils.h"
@@ -14,6 +14,7 @@
 #include "PBGameMode.h"
 
 #if PLATFORM_WINDOWS
+#pragma warning(disable : 4668 4005)
 #include <windows.h>
 #endif
 

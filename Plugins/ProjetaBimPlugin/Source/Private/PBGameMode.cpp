@@ -2,12 +2,11 @@
 
 #include "PBGameMode.h"
 #include "EngineUtils.h"
-#include "FileManager.h"
 #include "Misc/FileHelper.h"
 #include "Engine/LevelStreaming.h"
 #include "ProjetaBimPluginBPLibrary.h"
 #include "ProjetaBimPlugin.h"
-#include "Platform.h"
+#include "Json.h"
 
 APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
@@ -18,7 +17,7 @@ APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
 
 ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelName) const
 {
-	for (auto Level : GetWorld()->StreamingLevels)
+	for (auto Level : GetWorld()->GetStreamingLevels())
 	{
 		FString ThisLevelName = Level->GetWorldAssetPackageFName().ToString();		
 		int32 SlashPos = ThisLevelName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
