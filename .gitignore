@@ -70,6 +70,7 @@
 !/Content/ExplorationMode/
 !/Content/Media/
 !/Content/Blueprints/
+!/Content/VirtualReality/
 
 /Source/**
 /Plugins/**
