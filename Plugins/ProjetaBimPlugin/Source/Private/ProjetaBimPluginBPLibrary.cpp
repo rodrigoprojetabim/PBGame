@@ -270,11 +270,18 @@ void UProjetaBimPluginBPLibrary::GetMaterialDataFromDatasmith(const FString& Dat
 
 						const FXmlNode* ShaderNode = Node->GetFirstChildNode();
 						const FXmlNode* ColorNode = ShaderNode->FindChildNode(TEXT("Diffusecolor"));
-						const TArray<FXmlAttribute> Colors = ColorNode->GetAttributes();
-						const float Red = FCString::Atof(*Colors[0].GetValue());
-						const float Green = FCString::Atof(*Colors[1].GetValue());
-						const float Blue = FCString::Atof(*Colors[2].GetValue());
-						OutColors.Add(FLinearColor(Red, Green, Blue));
+						if (ColorNode != nullptr)
+						{
+							const TArray<FXmlAttribute> Colors = ColorNode->GetAttributes();
+							const float Red = FCString::Atof(*Colors[0].GetValue());
+							const float Green = FCString::Atof(*Colors[1].GetValue());
+							const float Blue = FCString::Atof(*Colors[2].GetValue());
+							OutColors.Add(FLinearColor(Red, Green, Blue));
+						}
+						else
+						{
+							OutColors.Add(FLinearColor(0.7f, 0.7f, 0.7f));
+						}
 					}
 				}
 			}
