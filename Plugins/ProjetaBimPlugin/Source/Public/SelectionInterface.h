@@ -17,11 +17,13 @@ class PROJETABIMPLUGIN_API ISelectionInterface
 	GENERATED_BODY()
 
 public:
-	/** Select this object (updates its appearance) */
+	/** Select this object (updates its appearance) 
+		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
 	void Select(int32 Index);
 
-	/** Deselect this object (updates its appearance) */
+	/** Deselect this object (updates its appearance) 
+		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
 	void Deselect(int32 Index);
 
