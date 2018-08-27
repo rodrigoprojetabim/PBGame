@@ -25,6 +25,10 @@ AInstancedStaticMeshActor::AInstancedStaticMeshActor()
 	ISMC_Transparent->SetVisibility(false);
 
 	ISMC_Selected->SetRenderCustomDepth(true);
+
+	ISMC->SetMobility(EComponentMobility::Static);
+	ISMC_Selected->SetMobility(EComponentMobility::Static);
+	ISMC_Transparent->SetMobility(EComponentMobility::Static);
 }
 
 void AInstancedStaticMeshActor::SetMaterialAndMesh_Implementation(AStaticMeshActor * SourceSMA)
@@ -48,18 +52,20 @@ void AInstancedStaticMeshActor::SetMaterialAndMesh_Implementation(AStaticMeshAct
 	}
 }
 
-void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform & WorldTransform, const FString & JsonID)
+void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform & WorldTransform, const FString & JsonID, const FString& ObjectDiscipline)
 {
 	const int32 Index = ISMC->AddInstanceWorldSpace(WorldTransform);
-	IDMap.Add(Index, FCString::Atoi(*JsonID));
+	IDMap.Add(Index, JsonID);
 
 	FTransform Limbo = WorldTransform;
 	Limbo.AddToTranslation(MINUS_LIMBO_OFFSET);
 	ISMC_Selected->AddInstanceWorldSpace(Limbo);
 	ISMC_Transparent->AddInstanceWorldSpace(Limbo);
+
+	Discipline = ObjectDiscipline;
 }
 
-void AInstancedStaticMeshActor::Select_Implementation(int32 Index)
+void AInstancedStaticMeshActor::UpdateAppearanceToSelected_Implementation(int32 Index)
 {
 	if (SelectedIndexes.Contains(Index))
 	{
@@ -70,7 +76,7 @@ void AInstancedStaticMeshActor::Select_Implementation(int32 Index)
 	FTransform Limbo;
 	ISMC->GetInstanceTransform(Index, Limbo);
 	Limbo.AddToTranslation(MINUS_LIMBO_OFFSET);
-	ISMC->UpdateInstanceTransform(Index, Limbo, false, false, true);
+	ISMC->UpdateInstanceTransform(Index, Limbo, false, true, true);
 
 	ISMC_Selected->GetInstanceTransform(Index, Limbo);
 	Limbo.AddToTranslation(PLUS_LIMBO_OFFSET);
@@ -78,7 +84,7 @@ void AInstancedStaticMeshActor::Select_Implementation(int32 Index)
 	ISMC_Selected->SetVisibility(true);
 }
 
-void AInstancedStaticMeshActor::Deselect_Implementation(int32 Index)
+void AInstancedStaticMeshActor::UpdateAppearanceToDeselected_Implementation(int32 Index)
 {
 	if (!SelectedIndexes.Contains(Index))
 	{
@@ -93,7 +99,7 @@ void AInstancedStaticMeshActor::Deselect_Implementation(int32 Index)
 
 	ISMC_Selected->GetInstanceTransform(Index, Limbo);
 	Limbo.AddToTranslation(MINUS_LIMBO_OFFSET);
-	ISMC_Selected->UpdateInstanceTransform(Index, Limbo, false, false, true);
+	ISMC_Selected->UpdateInstanceTransform(Index, Limbo, false, true, true);
 
 	if (SelectedIndexes.Num() == 0)
 	{
@@ -101,7 +107,7 @@ void AInstancedStaticMeshActor::Deselect_Implementation(int32 Index)
 	}
 }
 
-int32 AInstancedStaticMeshActor::ObjectIDToInstanceIndex(int32 ObjectID) const
+int32 AInstancedStaticMeshActor::ObjectIDToInstanceIndex(FString ObjectID) const
 {
 	TArray<int32> Keys;
 	IDMap.GetKeys(Keys);
@@ -113,6 +119,26 @@ int32 AInstancedStaticMeshActor::ObjectIDToInstanceIndex(int32 ObjectID) const
 		}
 	}
 	return -1;
+}
+
+void AInstancedStaticMeshActor::Select_Implementation(int32 Index)
+{
+	UpdateAppearanceToSelected(Index);
+}
+
+void AInstancedStaticMeshActor::Deselect_Implementation(int32 Index)
+{
+	UpdateAppearanceToDeselected(Index);
+}
+
+FString AInstancedStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index)
+{
+	return *IDMap.Find(Index);
+}
+
+FString AInstancedStaticMeshActor::GetDiscipline_Implementation()
+{
+	return Discipline;
 }
 
 void AInstancedStaticMeshActor::BeginPlay()

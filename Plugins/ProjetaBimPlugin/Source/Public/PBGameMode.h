@@ -6,6 +6,30 @@
 #include "GameFramework/GameModeBase.h"
 #include "PBGameMode.generated.h"
 
+
+USTRUCT(BlueprintType)
+struct FObjectSelection
+{
+	GENERATED_USTRUCT_BODY()
+
+		/** Selected actor */
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+		AActor* SelectedActor;
+
+	/** index of selected actor (for instanced SMs) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+		int32 Index;
+
+	/** Json identifier, to find this object's metadata */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+		FString JsonIdentifier;
+
+	/** discipline this object belongs to */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+		FString DisciplineCode;
+};
+
+
 USTRUCT(BlueprintType)
 struct FSetSelection
 {
