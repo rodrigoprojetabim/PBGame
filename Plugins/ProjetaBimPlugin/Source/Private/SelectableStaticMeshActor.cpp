@@ -32,18 +32,28 @@ void ASelectableStaticMeshActor::Deselect_Implementation(int32 Index)
 	}
 }
 
-FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index)
+FObjectIdentifier ASelectableStaticMeshActor::GetObjectIdentifier_Implementation(int32 Index) const
 {
-	return JsonID;
+	return ObjectIdentifier;
 }
 
-FString ASelectableStaticMeshActor::GetDiscipline_Implementation()
+FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index) const
+{
+	return ObjectIdentifier.JsonIdentifier;
+}
+
+FString ASelectableStaticMeshActor::GetDiscipline_Implementation() const
 {
 	return Discipline;
 }
 
-void ASelectableStaticMeshActor::SetDisciplineAndJsonID(const FString & NewDiscipline, const FString & NewJsonID)
+FString ASelectableStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Index) const
+{
+	return ObjectIdentifier.GetUniqueIdentifier();
+}
+
+void ASelectableStaticMeshActor::SetDisciplineAndObjectIdentifier(const FString& NewDiscipline, const FObjectIdentifier& NewObjectIdentifier)
 {
 	Discipline = NewDiscipline;
-	JsonID = NewJsonID;
+	ObjectIdentifier = NewObjectIdentifier;
 }

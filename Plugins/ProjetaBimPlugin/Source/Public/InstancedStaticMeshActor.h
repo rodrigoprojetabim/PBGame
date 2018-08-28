@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SelectionInterface.h"
+#include "ProjetaBimTypes.h"
 #include "InstancedStaticMeshActor.generated.h"
 
 UCLASS(Blueprintable)
@@ -30,12 +31,12 @@ public:
 	AInstancedStaticMeshActor();
 	
 	/** these objects' discipline */
-	UPROPERTY(EditAnywhere, Category="Instanced Static Mesh Actor")
+	UPROPERTY(EditAnywhere, Category="ProjetaBIM")
 	FString Discipline;
 
-	/** maps ISMC index to object (Revit) identifier */
-	UPROPERTY(VisibleAnywhere, Category = "Instanced Static Mesh Actor")
-	TMap<int32, FString> IDMap;
+	/** maps ISM index to object (Revit) identifier */
+	UPROPERTY(VisibleAnywhere, Category = "ProjetaBIM")
+	TMap<int32, FObjectIdentifier> IDMap;
 
 	/** index of currently selected instances */
 	UPROPERTY(BlueprintReadOnly, Category = "Instanced Static Mesh Actor")
@@ -46,8 +47,8 @@ public:
 	void SetMaterialAndMesh_Implementation(class AStaticMeshActor* SourceSMA);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
-	void AddInstancePB(const FTransform& WorldTransform, const FString& JsonID, const FString& ObjectDiscipline);
-	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FString& JsonID, const FString& Discipline);
+	void AddInstancePB(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline);
+	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
 	void UpdateAppearanceToSelected(int32 Index);
@@ -57,13 +58,15 @@ public:
 	void UpdateAppearanceToDeselected(int32 Index);
 	void UpdateAppearanceToDeselected_Implementation(int32 Index);
 
-	UFUNCTION(BlueprintPure, Category = "Instanced Static Mesh Actor")
-	int32 ObjectIDToInstanceIndex(FString ObjectID) const;
+	UFUNCTION(BlueprintPure, Category = "Instanced Static Mesh Actor", meta=(Keywords="json link"))
+	int32 ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const;
 	
 	/* ISelectionInterface */
 	virtual void Select_Implementation(int32 Index) override;
 	virtual void Deselect_Implementation(int32 Index) override;
-	FString GetJsonIdentifier_Implementation(int32 Index) override;
-	FString GetDiscipline_Implementation() override;
+	FString GetJsonIdentifier_Implementation(int32 Index) const override;
+	FString GetDiscipline_Implementation() const override;
+	FString GetUniqueIdentifier_Implementation(int32 Index) const override;
+	FObjectIdentifier GetObjectIdentifier_Implementation(int32 Index) const override;
 	/* end ISelectionInterface */
 };

@@ -52,10 +52,10 @@ void AInstancedStaticMeshActor::SetMaterialAndMesh_Implementation(AStaticMeshAct
 	}
 }
 
-void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform & WorldTransform, const FString & JsonID, const FString& ObjectDiscipline)
+void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline)
 {
 	const int32 Index = ISMC->AddInstanceWorldSpace(WorldTransform);
-	IDMap.Add(Index, JsonID);
+	IDMap.Add(Index, ObjectIdentifier);
 
 	FTransform Limbo = WorldTransform;
 	Limbo.AddToTranslation(MINUS_LIMBO_OFFSET);
@@ -107,7 +107,7 @@ void AInstancedStaticMeshActor::UpdateAppearanceToDeselected_Implementation(int3
 	}
 }
 
-int32 AInstancedStaticMeshActor::ObjectIDToInstanceIndex(FString ObjectID) const
+int32 AInstancedStaticMeshActor::ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const
 {
 	TArray<int32> Keys;
 	IDMap.GetKeys(Keys);
@@ -131,14 +131,26 @@ void AInstancedStaticMeshActor::Deselect_Implementation(int32 Index)
 	UpdateAppearanceToDeselected(Index);
 }
 
-FString AInstancedStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index)
+FObjectIdentifier AInstancedStaticMeshActor::GetObjectIdentifier_Implementation(int32 Index) const
 {
 	return *IDMap.Find(Index);
 }
 
-FString AInstancedStaticMeshActor::GetDiscipline_Implementation()
+FString AInstancedStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index) const
+{
+	const FObjectIdentifier Obj = *IDMap.Find(Index);
+	return Obj.JsonIdentifier;
+}
+
+FString AInstancedStaticMeshActor::GetDiscipline_Implementation() const
 {
 	return Discipline;
+}
+
+FString AInstancedStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Index) const
+{
+	const FObjectIdentifier Obj = *IDMap.Find(Index);
+	return Obj.GetUniqueIdentifier();
 }
 
 void AInstancedStaticMeshActor::BeginPlay()

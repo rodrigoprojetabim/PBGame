@@ -372,3 +372,12 @@ float UProjetaBimPluginBPLibrary::GetDistanceToCollision(UPrimitiveComponent * C
 	}
 	return CollisionComponent->GetDistanceToCollision(Point, ClosestPointOnCollision);
 }
+
+FString UProjetaBimPluginBPLibrary::GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier) const
+{
+	if (ObjectIdentifier.LinkIdentifier == TEXT("0"))
+	{
+		return ObjectIdentifier.JsonIdentifier;
+	}
+	return ObjectIdentifier.LinkIdentifier + TEXT("_") + ObjectIdentifier.JsonIdentifier;
+}

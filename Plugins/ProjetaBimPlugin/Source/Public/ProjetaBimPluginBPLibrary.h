@@ -3,6 +3,7 @@
 #pragma once
 
 #include "Kismet/BlueprintFunctionLibrary.h"
+#include "ProjetaBimTypes.h"
 #include "ProjetaBimPluginBPLibrary.generated.h"
 
 /* 
@@ -87,4 +88,8 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 
 	UFUNCTION(BlueprintPure, Category = "Utilities", meta = (Keywords = "closest nearest"))
 	static float GetDistanceToCollision(UPrimitiveComponent* CollisionComponent, const FVector& Point, FVector& ClosestPointOnCollision);
+	
+	/** Get the object's unique identifier (such as LinkID_JsonID) */
+	UFUNCTION(BlueprintPure, Category="Object Identifier")
+	FString GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier) const;
 };
