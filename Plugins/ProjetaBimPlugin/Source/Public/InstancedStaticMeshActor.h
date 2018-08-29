@@ -30,10 +30,6 @@ protected:
 public:
 	AInstancedStaticMeshActor();
 	
-	/** these objects' discipline */
-	UPROPERTY(EditAnywhere, Category="ProjetaBIM")
-	FString Discipline;
-
 	/** maps ISM index to object (Revit) identifier */
 	UPROPERTY(VisibleAnywhere, Category = "ProjetaBIM")
 	TMap<int32, FObjectIdentifier> IDMap;
@@ -47,8 +43,8 @@ public:
 	void SetMaterialAndMesh_Implementation(class AStaticMeshActor* SourceSMA);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
-	void AddInstancePB(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline);
-	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline);
+	void AddInstancePB(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
+	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
 	void UpdateAppearanceToSelected(int32 Index);

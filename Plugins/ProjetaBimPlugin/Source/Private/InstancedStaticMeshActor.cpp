@@ -52,7 +52,7 @@ void AInstancedStaticMeshActor::SetMaterialAndMesh_Implementation(AStaticMeshAct
 	}
 }
 
-void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier, const FString& ObjectDiscipline)
+void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier)
 {
 	const int32 Index = ISMC->AddInstanceWorldSpace(WorldTransform);
 	IDMap.Add(Index, ObjectIdentifier);
@@ -61,8 +61,6 @@ void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& W
 	Limbo.AddToTranslation(MINUS_LIMBO_OFFSET);
 	ISMC_Selected->AddInstanceWorldSpace(Limbo);
 	ISMC_Transparent->AddInstanceWorldSpace(Limbo);
-
-	Discipline = ObjectDiscipline;
 }
 
 void AInstancedStaticMeshActor::UpdateAppearanceToSelected_Implementation(int32 Index)
@@ -144,7 +142,13 @@ FString AInstancedStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index)
 
 FString AInstancedStaticMeshActor::GetDiscipline_Implementation() const
 {
-	return Discipline;
+	TArray<int32> Keys;
+	IDMap.GetKeys(Keys);
+	if (Keys.Num() > 0)
+	{
+		return (*IDMap.Find(Keys[0])).DisciplineCode;
+	}
+	return TEXT("");
 }
 
 FString AInstancedStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Index) const

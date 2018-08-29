@@ -44,7 +44,7 @@ FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index
 
 FString ASelectableStaticMeshActor::GetDiscipline_Implementation() const
 {
-	return Discipline;
+	return ObjectIdentifier.DisciplineCode;
 }
 
 FString ASelectableStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Index) const
@@ -52,8 +52,7 @@ FString ASelectableStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Ind
 	return ObjectIdentifier.GetUniqueIdentifier();
 }
 
-void ASelectableStaticMeshActor::SetDisciplineAndObjectIdentifier(const FString& NewDiscipline, const FObjectIdentifier& NewObjectIdentifier)
+void ASelectableStaticMeshActor::SetObjectIdentifier(const FObjectIdentifier& NewObjectIdentifier)
 {
-	Discipline = NewDiscipline;
 	ObjectIdentifier = NewObjectIdentifier;
 }

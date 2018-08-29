@@ -27,11 +27,8 @@ public:
 	/* end ISelectionInterface */
 	
 	UPROPERTY(EditAnywhere, Category="ProjetaBIM")
-	FString Discipline;
-	
-	UPROPERTY(EditAnywhere, Category="ProjetaBIM")
 	FObjectIdentifier ObjectIdentifier;
 
 	UFUNCTION(BlueprintCallable, Category="ProjetaBIM", meta=(Keywords="json link"))
-	void SetDisciplineAndObjectIdentifier(const FString& NewDiscipline, const FObjectIdentifier& NewObjectIdentifier);
+	void SetObjectIdentifier(const FObjectIdentifier& NewObjectIdentifier);
 };
