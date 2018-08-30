@@ -26,6 +26,22 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Instanced Static Mesh Actor")
 	class UInstancedStaticMeshComponent* ISMC_Transparent;
+	
+	UPROPERTY()
+	TArray<EOpacityLevel> OpacityLevels;
+	
+	UPROPERTY()
+	TArray<FTransform> OriginalWorldTransforms;
+	
+	/** index of currently highlighted instances */
+	TArray<int32> HighlightedIndexes;
+
+	bool IsAnyInstanceTransparent() const;
+	
+	void SetObjectOpacity_Internal(int32 Index, EOpacityLevel NewOpacityLevel);
+	
+	UPROPERTY()
+	int32 NumberOfInstances;
 
 public:
 	AInstancedStaticMeshActor();
@@ -33,11 +49,7 @@ public:
 	/** maps ISM index to object (Revit) identifier */
 	UPROPERTY(VisibleAnywhere, Category = "ProjetaBIM")
 	TMap<int32, FObjectIdentifier> IDMap;
-
-	/** index of currently selected instances */
-	UPROPERTY(BlueprintReadOnly, Category = "Instanced Static Mesh Actor")
-	TArray<int32> SelectedIndexes;
-
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Instanced Static Mesh Actor")
 	void SetMaterialAndMesh(class AStaticMeshActor* SourceSMA);
 	void SetMaterialAndMesh_Implementation(class AStaticMeshActor* SourceSMA);
@@ -46,23 +58,17 @@ public:
 	void AddInstancePB(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
 	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
-	void UpdateAppearanceToSelected(int32 Index);
-	void UpdateAppearanceToSelected_Implementation(int32 Index);
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
-	void UpdateAppearanceToDeselected(int32 Index);
-	void UpdateAppearanceToDeselected_Implementation(int32 Index);
-
 	UFUNCTION(BlueprintPure, Category = "Instanced Static Mesh Actor", meta=(Keywords="json link"))
 	int32 ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const;
 	
 	/* ISelectionInterface */
-	virtual void Select_Implementation(int32 Index) override;
-	virtual void Deselect_Implementation(int32 Index) override;
+	virtual void Highlight_Implementation(int32 Index) override;
+	virtual void RemoveHighlight_Implementation(int32 Index) override;
 	FString GetJsonIdentifier_Implementation(int32 Index) const override;
 	FString GetDiscipline_Implementation() const override;
 	FString GetUniqueIdentifier_Implementation(int32 Index) const override;
 	FObjectIdentifier GetObjectIdentifier_Implementation(int32 Index) const override;
+	EOpacityLevel GetObjectOpacity_Implementation(int32 Index) const override;
+	void SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
 	/* end ISelectionInterface */
 };

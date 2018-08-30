@@ -18,15 +18,20 @@ class PROJETABIMPLUGIN_API ISelectionInterface
 	GENERATED_BODY()
 
 public:
-	/** Select this object (updates its appearance) 
+	/** Highlight this object (updates its appearance) 
 		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
-	void Select(int32 Index);
+	void Highlight(int32 Index);
 
-	/** Deselect this object (updates its appearance) 
+	/** Remove highlight from this object (updates its appearance) 
 		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
-	void Deselect(int32 Index);
+	void RemoveHighlight(int32 Index);
+	
+	/** Remove highlight from this object (updates its appearance) 
+		@param Index used only for instanced static mesh actors */
+	//UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
+	//void MakeOpaque(int32 Index);
 
 	/** get this object's json identifier 
 		@param Index used only for instanced static mesh actors */
@@ -46,4 +51,14 @@ public:
 		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="json link"))
 	FObjectIdentifier GetObjectIdentifier(int32 Index) const;
+	
+	/** get this object's opacity 
+		@param Index used only for instanced static mesh actors */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
+	EOpacityLevel GetObjectOpacity(int32 Index) const;
+	
+	/** set this object's opacity 
+		@param Index used only for instanced static mesh actors; -1 means all instances */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
+	void SetObjectOpacity(int32 Index, EOpacityLevel NewOpacityLevel);
 };

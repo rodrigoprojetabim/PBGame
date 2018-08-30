@@ -3,7 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "UObject/ObjectMacros.h"
 #include "ProjetaBimTypes.generated.h"
+
+UENUM(BlueprintType)
+enum class EOpacityLevel : uint8 
+{
+	Opaque,
+	Transparent,
+	Invisible,
+	Count UMETA(Hidden)
+};
 
 USTRUCT(BlueprintType)
 struct FObjectIdentifier

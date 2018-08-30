@@ -16,16 +16,23 @@ class PROJETABIMPLUGIN_API ASelectableStaticMeshActor : public AStaticMeshActor,
 {
 	GENERATED_BODY()
 
+protected:
+	EOpacityLevel CurrentOpacity;
+
 public:
 	/* ISelectionInterface */
-	virtual void Select_Implementation(int32 Index) override;
-	virtual void Deselect_Implementation(int32 Index) override;
+	virtual void Highlight_Implementation(int32 Index) override;
+	virtual void RemoveHighlight_Implementation(int32 Index) override;
 	FString GetJsonIdentifier_Implementation(int32 Index) const override;
 	FString GetDiscipline_Implementation() const override;
 	FString GetUniqueIdentifier_Implementation(int32 Index) const override;
 	FObjectIdentifier GetObjectIdentifier_Implementation(int32 Index) const override;
+	EOpacityLevel GetObjectOpacity_Implementation(int32 Index) const override;
+	void SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
 	/* end ISelectionInterface */
 	
+	ASelectableStaticMeshActor();
+
 	UPROPERTY(EditAnywhere, Category="ProjetaBIM")
 	FObjectIdentifier ObjectIdentifier;
 
