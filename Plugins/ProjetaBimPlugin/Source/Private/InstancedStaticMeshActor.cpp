@@ -147,6 +147,35 @@ void AInstancedStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EOp
 	}
 }
 
+int32 AInstancedStaticMeshActor::Length_Implementation() const
+{
+	return NumberOfInstances;
+}
+
+void AInstancedStaticMeshActor::SetCollisionProfileName_Implementation(FName NewCollisionProfile)
+{
+	ISMC->SetCollisionProfileName(NewCollisionProfile);
+	ISMC_Selected->SetCollisionProfileName(NewCollisionProfile);
+}
+
+void AInstancedStaticMeshActor::GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector & OutOrigin, FVector & OutExtent) const
+{
+	if (Index < NumberOfInstances)
+	{
+		FBox Box;
+		if (HighlightedIndexes.Find(Index) != -1)
+		{
+			Box = ISMC_Selected->InstanceBodies[Index]->GetBodyBounds();		
+		}
+		else
+		{
+			Box = ISMC->InstanceBodies[Index]->GetBodyBounds();
+		}
+		OutOrigin = Box.GetCenter();
+		OutExtent = Box.GetExtent();
+	}
+}
+
 void AInstancedStaticMeshActor::SetObjectOpacity_Internal(int32 Index, EOpacityLevel NewOpacityLevel)
 {
 	if (OpacityLevels.IsValidIndex(Index))

@@ -81,6 +81,21 @@ void ASelectableStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EO
 	}
 }
 
+int32 ASelectableStaticMeshActor::Length_Implementation() const
+{
+	return 1;
+}
+
+void ASelectableStaticMeshActor::SetCollisionProfileName_Implementation(FName NewCollisionProfile)
+{
+	GetStaticMeshComponent()->SetCollisionProfileName(NewCollisionProfile);
+}
+
+void ASelectableStaticMeshActor::GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector & OutOrigin, FVector & OutExtent) const
+{
+	GetActorBounds(bOnlyCollidingComponents, OutOrigin, OutExtent);
+}
+
 FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index) const
 {
 	return ObjectIdentifier.JsonIdentifier;

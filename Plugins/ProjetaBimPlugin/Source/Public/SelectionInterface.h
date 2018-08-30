@@ -61,4 +61,14 @@ public:
 		@param Index used only for instanced static mesh actors; -1 means all instances */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
 	void SetObjectOpacity(int32 Index, EOpacityLevel NewOpacityLevel);
+
+	/** returns the number of elements in this object (1 if SelectableStaticMeshActor, number of instances if InstancedStaticMeshActor) */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="number elements instances indexes"))
+	int32 Length() const;
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection")
+	void SetCollisionProfileName(FName NewCollisionProfile);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="actor size length"))
+	void GetObjectBounds(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const;
 };

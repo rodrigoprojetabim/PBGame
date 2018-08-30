@@ -29,6 +29,9 @@ public:
 	FObjectIdentifier GetObjectIdentifier_Implementation(int32 Index) const override;
 	EOpacityLevel GetObjectOpacity_Implementation(int32 Index) const override;
 	void SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
+	int32 Length_Implementation() const override;
+	void SetCollisionProfileName_Implementation(FName NewCollisionProfile) override;
+	void GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const override;
 	/* end ISelectionInterface */
 	
 	ASelectableStaticMeshActor();
