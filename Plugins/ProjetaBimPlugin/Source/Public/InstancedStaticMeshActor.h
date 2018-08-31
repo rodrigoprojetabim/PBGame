@@ -28,7 +28,10 @@ protected:
 	class UInstancedStaticMeshComponent* ISMC_Transparent;
 	
 	UPROPERTY()
-	TArray<EOpacityLevel> OpacityLevels;
+	TArray<EOpacityLevel> ObjectsOpacity;
+	
+	UPROPERTY()
+	TArray<EOpacityLevel> SetSelectionsOpacity;
 	
 	UPROPERTY()
 	TArray<FTransform> OriginalWorldTransforms;
@@ -38,16 +41,21 @@ protected:
 
 	bool IsAnyInstanceTransparent() const;
 	
-	void SetObjectOpacity_Internal(int32 Index, EOpacityLevel NewOpacityLevel);
+	void SetObjectOpacity_Internal(int32 Index);
 	
 	UPROPERTY()
 	int32 NumberOfInstances;
+	
+	TArray<class UMaterialInstanceDynamic*> MatInstancesSelected;
+	TArray<class UMaterialInstanceDynamic*> MatInstancesTransparent;
 
+	bool IsFullyOpaque(int32 Index) const;
+	
 public:
 	AInstancedStaticMeshActor();
 	
 	/** maps ISM index to object (Revit) identifier */
-	UPROPERTY(VisibleAnywhere, Category = "ProjetaBIM")
+	UPROPERTY(EditAnywhere, Category = "ProjetaBIM")
 	TMap<int32, FObjectIdentifier> IDMap;
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Instanced Static Mesh Actor")
@@ -73,5 +81,7 @@ public:
 	int32 Length_Implementation() const override;
 	void SetCollisionProfileName_Implementation(FName NewCollisionProfile) override;
 	void GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const override;
+	EOpacityLevel GetSetSelectionOpacity_Implementation(int32 Index) const override;
+	void SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
 	/* end ISelectionInterface */
 };

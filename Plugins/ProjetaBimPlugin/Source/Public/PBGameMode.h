@@ -21,9 +21,6 @@ private:
 	
 protected:
 
-	/** returns Mesh's discipline by looking at its streaming level name suffix. Returns MOB if level has no suffix. */
-	FString GetMeshDiscipline(const class AStaticMeshActor* Mesh) const;
-
 	/** returns the current level's name */
 	FString GetPersistentLevelName() const;
 
@@ -32,8 +29,6 @@ protected:
 
 public:
 	
-	//APBGameMode();
-
 	/** disciplines that need to be processed into the SetSelection map */
 	UPROPERTY(BlueprintReadWrite, Category = "ProjetaBIM")
 	TArray<FString> DisciplinesToProcess;
@@ -45,13 +40,14 @@ public:
 	UFUNCTION(BlueprintPure, Category = "ProjetaBIM")
 	bool GetSetSelection(const FString& SetIdentifier, FSetSelection& SetSelection) const;
 
-	/** adds Mesh to SetIdentifier, returns true if success, false if SetIdentifier doesn't exists */
-	bool AddStaticMeshToSetSelection(const FString& SetIdentifier, class AStaticMeshActor* Mesh);
+	/** adds object to SetIdentifier, returns true if success, false if SetIdentifier doesn't exists */
+	bool AddObjectToSetSelection(const FString& InSetIdentifier, FObjectIdentifier InObject);
 
 	UPROPERTY(BlueprintReadWrite, Category = "ProjetaBIM")
 	TArray<FDiscipline> Disciplines;
 
+	/** maps unique identifiers to object data */
 	UPROPERTY(BlueprintReadOnly, Category = "ProjetaBIM")
-	TMap<FString, AStaticMeshActor*> StaticMeshMap;
+	TMap<FString, FObjectIdentifier> ObjectsMap;
 	
 };

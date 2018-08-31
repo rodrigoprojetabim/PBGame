@@ -52,12 +52,12 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="json link"))
 	FObjectIdentifier GetObjectIdentifier(int32 Index) const;
 	
-	/** get this object's opacity 
+	/** get this object's individual opacity 
 		@param Index used only for instanced static mesh actors */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
 	EOpacityLevel GetObjectOpacity(int32 Index) const;
 	
-	/** set this object's opacity 
+	/** set this object's individual opacity 
 		@param Index used only for instanced static mesh actors; -1 means all instances */
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
 	void SetObjectOpacity(int32 Index, EOpacityLevel NewOpacityLevel);
@@ -71,4 +71,15 @@ public:
 	
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="actor size length"))
 	void GetObjectBounds(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const;
+	
+	/** get this object's SetSelection opacity 
+		@param Index used only for instanced static mesh actors */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
+	EOpacityLevel GetSetSelectionOpacity(int32 Index) const;
+	
+	/** set this object's SetSelection opacity 
+		@param Index used only for instanced static mesh actors; -1 means all instances */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
+	void SetSetSelectionOpacity(int32 Index, EOpacityLevel NewOpacityLevel);
+	
 };

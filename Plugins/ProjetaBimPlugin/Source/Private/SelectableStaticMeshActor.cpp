@@ -2,39 +2,45 @@
 
 #include "SelectableStaticMeshActor.h"
 #include "Components/StaticMeshComponent.h"
+#include "ProjetaBimPluginBPLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
 ASelectableStaticMeshActor::ASelectableStaticMeshActor()
 {
-	CurrentOpacity = EOpacityLevel::Opaque;
+	ObjectOpacity = EOpacityLevel::Opaque;
+	SetSelectionOpacity = EOpacityLevel::Opaque;
+}
+
+void ASelectableStaticMeshActor::SetScalarParameter(FName ParameterName, float Value)
+{
+	UStaticMeshComponent* SMC = GetStaticMeshComponent();
+	
+	for (int i = 0; i < SMC->GetNumMaterials(); i++)
+	{
+		UMaterialInstanceDynamic* MID = SMC->CreateDynamicMaterialInstance(i);
+		if (MID != nullptr)
+		{
+			MID->SetScalarParameterValue(ParameterName, Value);
+		}
+	}
+}
+
+void ASelectableStaticMeshActor::UpdateCollisionAfterOpacityChange()
+{
+	const bool bIsOpaque = ObjectOpacity == EOpacityLevel::Opaque && SetSelectionOpacity == EOpacityLevel::Opaque;
+	SetActorEnableCollision(bIsOpaque);
 }
 
 void ASelectableStaticMeshActor::Highlight_Implementation(int32 Index)
 {
 	GetStaticMeshComponent()->SetRenderCustomDepth(true);
-
-	for (int i = 0; i < GetStaticMeshComponent()->GetNumMaterials(); i++)
-	{
-		UMaterialInstanceDynamic* MID = GetStaticMeshComponent()->CreateDynamicMaterialInstance(i);
-		if (MID != nullptr)
-		{
-			MID->SetScalarParameterValue(FName(TEXT("Highlight")), 1.0f);
-		}
-	}
+	SetScalarParameter(FName(TEXT("Highlight")), 1.0f);
 }
 
 void ASelectableStaticMeshActor::RemoveHighlight_Implementation(int32 Index)
 {
 	GetStaticMeshComponent()->SetRenderCustomDepth(false);
-
-	for (int i = 0; i < GetStaticMeshComponent()->GetNumMaterials(); i++)
-	{
-		UMaterialInstanceDynamic* MID = GetStaticMeshComponent()->CreateDynamicMaterialInstance(i);
-		if (MID != nullptr)
-		{
-			MID->SetScalarParameterValue(FName(TEXT("Highlight")), 0.0f);
-		}
-	}
+	SetScalarParameter(FName(TEXT("Highlight")), 0.0f);
 }
 
 FObjectIdentifier ASelectableStaticMeshActor::GetObjectIdentifier_Implementation(int32 Index) const
@@ -44,41 +50,15 @@ FObjectIdentifier ASelectableStaticMeshActor::GetObjectIdentifier_Implementation
 
 EOpacityLevel ASelectableStaticMeshActor::GetObjectOpacity_Implementation(int32 Index) const
 {
-	return CurrentOpacity;
+	return ObjectOpacity;
 }
 
 void ASelectableStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)
 {
-	UStaticMeshComponent* SMC = GetStaticMeshComponent();
-	
-	float NewOpacity;	
-	switch (NewOpacityLevel)
-	{
-		case EOpacityLevel::Opaque:
-		{
-			NewOpacity = 1.0f;
-			SetActorEnableCollision(true);
-		} break;
-		case EOpacityLevel::Transparent:
-		{
-			NewOpacity = 0.5f;
-			SetActorEnableCollision(false);
-		} break;
-		case EOpacityLevel::Invisible:
-		{
-			NewOpacity = 0.0f;
-			SetActorEnableCollision(false);
-		} break;
-	}
-
-	for (int i = 0; i < SMC->GetNumMaterials(); i++)
-	{
-		UMaterialInstanceDynamic* MID = SMC->CreateDynamicMaterialInstance(i);
-		if (MID != nullptr)
-		{
-			MID->SetScalarParameterValue(FName(TEXT("UserSetOpacity")), NewOpacity);
-		}
-	}
+	ObjectOpacity = NewOpacityLevel;
+	UpdateCollisionAfterOpacityChange();
+	const float NewOpacity = UProjetaBimPluginBPLibrary::GetOpacityLevelValue(NewOpacityLevel);
+	SetScalarParameter(FName(TEXT("UserSetOpacity")), NewOpacity);
 }
 
 int32 ASelectableStaticMeshActor::Length_Implementation() const
@@ -94,6 +74,19 @@ void ASelectableStaticMeshActor::SetCollisionProfileName_Implementation(FName Ne
 void ASelectableStaticMeshActor::GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector & OutOrigin, FVector & OutExtent) const
 {
 	GetActorBounds(bOnlyCollidingComponents, OutOrigin, OutExtent);
+}
+
+EOpacityLevel ASelectableStaticMeshActor::GetSetSelectionOpacity_Implementation(int32 Index) const
+{
+	return SetSelectionOpacity;
+}
+
+void ASelectableStaticMeshActor::SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)
+{
+	SetSelectionOpacity = NewOpacityLevel;
+	UpdateCollisionAfterOpacityChange();
+	const float NewOpacity =  UProjetaBimPluginBPLibrary::GetOpacityLevelValue(NewOpacityLevel);
+	SetScalarParameter(FName(TEXT("SetSelectionOpacity")), NewOpacity);	
 }
 
 FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index) const

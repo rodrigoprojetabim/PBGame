@@ -6,6 +6,8 @@
 #include "Engine/LevelStreaming.h"
 #include "ProjetaBimPluginBPLibrary.h"
 #include "ProjetaBimPlugin.h"
+#include "SelectionInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Json.h"
 
 APBGameMode::APBGameMode(const FObjectInitializer& ObjectInitializer)
@@ -32,26 +34,6 @@ ULevelStreaming * APBGameMode::GetStreamingLevelFromName(const FString & LevelNa
 	return nullptr;
 }
 
-FString APBGameMode::GetMeshDiscipline(const AStaticMeshActor * Mesh) const
-{
-	if (Mesh == nullptr)
-	{
-		return TEXT("");
-	}
-	ULevel* MeshLevel = Mesh->GetLevel();
-	if (MeshLevel == nullptr || MeshLevel->bIsLightingScenario)
-	{
-		return TEXT("MOB");
-	}
-	const FString LevelName = MeshLevel->GetOuter()->GetName();
-	const int32 UnderlineLoc = LevelName.Find(TEXT("_"));
-	if (UnderlineLoc != -1)
-	{
-		return LevelName.RightChop(UnderlineLoc+1);
-	}
-	return TEXT("MOB");
-}
-
 FString APBGameMode::GetPersistentLevelName() const
 {
 	FString LevelName = GetWorld()->GetMapName();
@@ -66,19 +48,6 @@ FString APBGameMode::GetLevelNameWithoutDisciplineSuffix(const FString& LevelNam
 	return ThisLevelName.RightChop(SlashPos + 1);
 }
 
-/*
-void APBGameMode::BeginPlay()
-{
-	for (auto Level : GetWorld()->StreamingLevels)
-	{
-		FString LevelName = Level->PackageNameToLoad.ToString();
-		int32 SlashPos = LevelName.Find(TEXT("/"), ESearchCase::IgnoreCase, ESearchDir::FromEnd);
-		LevelName = LevelName.RightChop(SlashPos + 1);
-		DisciplinesToProcess.Add(LevelName);
-	}
-	Super::BeginPlay();
-}
-*/
 void APBGameMode::InitializeSetSelectionMap()
 {
 	TArray<FString> ProcessedDisciplines;
@@ -119,78 +88,79 @@ void APBGameMode::InitializeSetSelectionMap()
 					UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Erro de leitura, verifique a sintaxe no arquivo ") + JsonFilePath);
 				}
 			}
-
-			for (TActorIterator<AStaticMeshActor> It(GetWorld(), AStaticMeshActor::StaticClass()); It; ++It)
+			TArray<AActor*> ActorList;
+			UGameplayStatics::GetAllActorsWithInterface(this, USelectionInterface::StaticClass(), ActorList);
+			for (const auto &Actor : ActorList) 
 			{
-				AStaticMeshActor* Mesh = *It;
-
-				if (!Mesh->ActorHasTag(SetSelectionDefinedTag) && UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(Mesh) == LevelName)
+				const auto &Interface = Cast<ISelectionInterface>(Actor);
+				if (Interface != nullptr && !Actor->ActorHasTag(SetSelectionDefinedTag) && UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(Actor) == LevelName)
 				{
-					//mesh not yet processed, and belongs to the currently processed streaming level
-
-					const FString MeshName = Mesh->GetName();
-
-					if (!Mesh->ActorHasTag(AddedToSMMapTag))
+					//actor not yet processed, and belongs to the currently processed streaming level
+					for (int32 i = 0; i < Interface->Length(); i++)
 					{
-						StaticMeshMap.Add(MeshName, Mesh);
-						Mesh->Tags.Add(AddedToSMMapTag);
-					}
-
-					const int32 OBJ_Position = MeshName.Find(TEXT("OBJ_"));
-
-					if (!JsonObject.IsValid())
-					{
-						const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-						AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
-					}
-					else if (OBJ_Position != -1) //mesh came from Revit
-					{
-						const FString ObjectID = MeshName.RightChop(OBJ_Position + 4);
-
-						if (JsonObject->HasField(ObjectID))
+						const FString ObjectUniqueIdentifier = Interface->GetUniqueIdentifier(i);
+						FObjectIdentifier Obj = Interface->GetObjectIdentifier(i);
+						if (!Actor->ActorHasTag(AddedToSMMapTag))
 						{
-							const TSharedPtr<FJsonObject> ThisObj = JsonObject->GetObjectField(ObjectID);
-							if (ThisObj->HasField("Parametros"))
+							ObjectsMap.Add(ObjectUniqueIdentifier, Obj);
+							Actor->Tags.Add(AddedToSMMapTag);
+						}
+
+						const int32 OBJ_Position = ObjectUniqueIdentifier.Find(TEXT("OBJ_"));
+
+						if (!JsonObject.IsValid())
+						{
+							const FString ActorDiscipline = Obj.DisciplineCode + TEXT("_Outros");
+							AddObjectToSetSelection(ActorDiscipline, Obj);
+						}
+						else if (Obj.HasJsonIdentifier()) //mesh came from Revit
+						{
+							if (JsonObject->HasField(Obj.JsonIdentifier))
 							{
-								const TSharedPtr<FJsonObject> Params = ThisObj->GetObjectField("Parametros");
-								if (Params->HasField("SetSelection"))
+								const TSharedPtr<FJsonObject> ThisObj = JsonObject->GetObjectField(Obj.JsonIdentifier);
+								if (ThisObj->HasField("Parametros"))
 								{
-									const FString& SetSelectionValue = Params->GetStringField("SetSelection");
-									if (!AddStaticMeshToSetSelection(SetSelectionValue, Mesh))
+									const TSharedPtr<FJsonObject> Params = ThisObj->GetObjectField("Parametros");
+									if (Params->HasField("SetSelection"))
 									{
-										//invalid/undefined SetSelection value
-										const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-										//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" tem valor de SetSelection invalido (") + SetSelectionValue + TEXT("), adicionando-o ao set ") + MeshDiscipline);
-										AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
+										const FString& SetSelectionValue = Params->GetStringField("SetSelection");
+										if (!AddObjectToSetSelection(SetSelectionValue, Obj))
+										{
+											//invalid/undefined SetSelection value
+											const FString ActorDiscipline = Obj.DisciplineCode + TEXT("_Outros");
+											//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + ObjectUniqueIdentifier + TEXT(" tem valor de SetSelection invalido (") + SetSelectionValue + TEXT("), adicionando-o ao set ") + ActorDiscipline);
+											AddObjectToSetSelection(ActorDiscipline, Obj);
+										}
+									}
+									else
+									{
+										//has no SetSelection field
+										const FString ActorDiscipline = Obj.DisciplineCode + TEXT("_Outros");
+										//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + ObjectUniqueIdentifier + TEXT(" nao tem campo SetSelection, adicionando-o ao set ") + ActorDiscipline);
+										AddObjectToSetSelection(ActorDiscipline, Obj);
 									}
 								}
 								else
 								{
-									//has no SetSelection field
-									const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-									//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo SetSelection, adicionando-o ao set ") + MeshDiscipline);
-									AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
+									//has no field Parametros
+									const FString ActorDiscipline = Obj.DisciplineCode + TEXT("_Outros");
+									//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + ObjectUniqueIdentifier + TEXT(" nao tem campo Parametros, adicionando-o ao set ") + ActorDiscipline);
+									AddObjectToSetSelection(ActorDiscipline, Obj);
 								}
 							}
 							else
 							{
-								//has no field Parametros
-								const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-								//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem campo Parametros, adicionando-o ao set ") + MeshDiscipline);
-								AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
+								const FString ActorDiscipline = Obj.DisciplineCode + TEXT("_Outros");
+								//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + ObjectUniqueIdentifier + TEXT(" nao encontrado no json, adicionando-o ao set ") + ActorDiscipline);
+								AddObjectToSetSelection(ActorDiscipline, Obj);
 							}
 						}
-						else
+						else //mesh added manually in editor
 						{
-							const FString MeshDiscipline = GetMeshDiscipline(Mesh) + TEXT("_Outros");
-							//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao encontrado no json, adicionando-o ao set ") + MeshDiscipline);
-							AddStaticMeshToSetSelection(MeshDiscipline, Mesh);
+							//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + ObjectUniqueIdentifier + TEXT(" nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."));
+							AddObjectToSetSelection(TEXT("MOB_Outros"), Obj);
 						}
-					}
-					else //mesh added manually in editor
-					{
-						//UProjetaBimPluginBPLibrary::AddLogEntry(TEXT("Objeto ") + MeshName + TEXT(" nao tem um ID valido, adicionando-o na disciplina Mobiliaria (MOB_Outros)."));
-						AddStaticMeshToSetSelection(TEXT("MOB_Outros"), Mesh);
+
 					}
 				}
 			}
@@ -220,16 +190,17 @@ bool APBGameMode::GetSetSelection(const FString & SetIdentifier, FSetSelection& 
 	return false;
 }
 
-bool APBGameMode::AddStaticMeshToSetSelection(const FString & SetIdentifier, AStaticMeshActor * Mesh)
+bool APBGameMode::AddObjectToSetSelection(const FString& InSetIdentifier, FObjectIdentifier InObject)
 {
 	for (auto& Discipline : Disciplines)
 	{
 		for (auto& Set : Discipline.Sets)
 		{
-			if (Set.Identifier.Equals(SetIdentifier,ESearchCase::IgnoreCase))
+			if (Set.Identifier.Equals(InSetIdentifier,ESearchCase::IgnoreCase))
 			{
-				Mesh->Tags.Add(SetSelectionDefinedTag);
-				Set.Meshes.Add(Mesh);
+				InObject.Actor->Tags.Add(SetSelectionDefinedTag);
+				InObject.SetSelectionCode = InSetIdentifier;
+				Set.Objects.Add(InObject);
 				return true;
 			}
 		}

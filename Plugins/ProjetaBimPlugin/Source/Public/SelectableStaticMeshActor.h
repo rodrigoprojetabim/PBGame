@@ -17,7 +17,11 @@ class PROJETABIMPLUGIN_API ASelectableStaticMeshActor : public AStaticMeshActor,
 	GENERATED_BODY()
 
 protected:
-	EOpacityLevel CurrentOpacity;
+	EOpacityLevel ObjectOpacity;
+	EOpacityLevel SetSelectionOpacity;
+
+	void SetScalarParameter(FName ParameterName, float Value);
+	void UpdateCollisionAfterOpacityChange();
 
 public:
 	/* ISelectionInterface */
@@ -32,6 +36,8 @@ public:
 	int32 Length_Implementation() const override;
 	void SetCollisionProfileName_Implementation(FName NewCollisionProfile) override;
 	void GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const override;
+	EOpacityLevel GetSetSelectionOpacity_Implementation(int32 Index) const override;
+	void SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
 	/* end ISelectionInterface */
 	
 	ASelectableStaticMeshActor();

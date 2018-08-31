@@ -91,5 +91,9 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	
 	/** Get the object's unique identifier (such as LinkID_JsonID) */
 	UFUNCTION(BlueprintPure, Category="Object Identifier")
-	FString GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier) const;
+	static FString GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier);
+	
+	/** Gets opacity level's value */
+	UFUNCTION(BlueprintPure, Category="Object Identifier")
+	static float GetOpacityLevelValue(EOpacityLevel OpacityLevel);
 };

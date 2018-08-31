@@ -32,6 +32,22 @@ struct FObjectIdentifier
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object Identifier")
 	FString DisciplineCode;
 	
+	/** this object's actor */
+	UPROPERTY(BlueprintReadOnly, Category = "Object Identifier")
+	class AActor* Actor;
+	
+	/** its index (if instanced static mesh) */
+	UPROPERTY(BlueprintReadOnly, Category = "Object Identifier")
+	int32 Index;
+
+	/** the level name it belongs to */
+	UPROPERTY(BlueprintReadOnly, Category = "Object Identifier")
+	FName LevelName;
+
+	/** its SetSelection code (e.g. "ARQ_Outros", "ac", "portas"...) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Object Identifier")
+	FString SetSelectionCode;
+
 	inline FString GetUniqueIdentifier() const
 	{
 		if (LinkIdentifier == TEXT("0"))
@@ -46,24 +62,31 @@ struct FObjectIdentifier
 		return (JsonIdentifier == Other.JsonIdentifier && LinkIdentifier == Other.LinkIdentifier && DisciplineCode == Other.DisciplineCode);
 	}
 
+	inline bool HasJsonIdentifier() const
+	{
+		return JsonIdentifier != TEXT("0");
+	}
+
 	FObjectIdentifier()
 	{
 		JsonIdentifier = TEXT("0");
 		LinkIdentifier = TEXT("0");
-		DisciplineCode = TEXT("");
+		DisciplineCode = TEXT("NONE");
+		SetSelectionCode = TEXT("Indefinido");
 	}
 };
+
 
 USTRUCT(BlueprintType)
 struct FSetSelection
 {
 	GENERATED_USTRUCT_BODY()
 
-	/** identifier, as in json */
+	/** SetSelection identifier, as in json (e.g. "ac") */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetSelection")
 	FString Identifier;
 
-	/** text that appears in the UI */
+	/** text that appears in the UI (e.g. "Ar Condicionado") */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetSelection")
 	FText UIText;
 
@@ -71,9 +94,9 @@ struct FSetSelection
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetSelection")
 	float CurrentOpacity;
 
-	/** Meshes in this SetSelection */
+	/** Objects in this SetSelection */
 	UPROPERTY(BlueprintReadOnly, Category = "SetSelection")
-	TArray<class AStaticMeshActor*> Meshes;
+	TArray<FObjectIdentifier> Objects;
 
 	FSetSelection()
 	{
@@ -97,18 +120,4 @@ struct FDiscipline
 	/** SetSelections for this discipline */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Discipline")
 	TArray<FSetSelection> Sets;
-};
-
-USTRUCT(BlueprintType)
-struct FSetSelectionMap
-{
-	GENERATED_USTRUCT_BODY()
-
-	/** SetSelection identifier */
-	UPROPERTY(BlueprintReadOnly, Category = "SetSelectionMap")
-	FString Identifier;
-
-	/** Meshes in this SetSelection */
-	UPROPERTY(BlueprintReadOnly, Category = "SetSelectionMap")
-	TArray<AStaticMeshActor*> Meshes;
 };

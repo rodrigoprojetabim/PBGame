@@ -10,14 +10,19 @@
 
 bool AInstancedStaticMeshActor::IsAnyInstanceTransparent() const
 {
-	for (auto Op : OpacityLevels)
+	for (int32 i=0; i < NumberOfInstances; i++)
 	{
-		if (Op == EOpacityLevel::Transparent)
+		if (ObjectsOpacity[i] == EOpacityLevel::Transparent || SetSelectionsOpacity[i] == EOpacityLevel::Transparent)
 		{
 			return true;
 		}
 	}
 	return false;
+}
+
+bool AInstancedStaticMeshActor::IsFullyOpaque(int32 Index) const
+{
+	return (ObjectsOpacity[Index] == EOpacityLevel::Opaque && SetSelectionsOpacity[Index] == EOpacityLevel::Opaque);
 }
 
 AInstancedStaticMeshActor::AInstancedStaticMeshActor()
@@ -70,7 +75,8 @@ void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& W
 	ISMC_Selected->AddInstanceWorldSpace(LIMBO);
 	ISMC_Transparent->AddInstanceWorldSpace(LIMBO);
 
-	OpacityLevels.Add(EOpacityLevel::Opaque);
+	ObjectsOpacity.Add(EOpacityLevel::Opaque);
+	SetSelectionsOpacity.Add(EOpacityLevel::Opaque);
 	OriginalWorldTransforms.Add(WorldTransform);
 	NumberOfInstances = NumberOfInstances + 1;
 }
@@ -91,19 +97,31 @@ int32 AInstancedStaticMeshActor::ObjectIdentifierToInstanceIndex(const FObjectId
 
 void AInstancedStaticMeshActor::Highlight_Implementation(int32 Index)
 {
-	if (OpacityLevels.IsValidIndex(Index) && OpacityLevels[Index] == EOpacityLevel::Opaque)
+	if (!IsFullyOpaque(Index))
 	{
-		HighlightedIndexes.AddUnique(Index);
-
-		ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-		ISMC_Selected->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
-		ISMC_Selected->SetVisibility(true);
+		return;
 	}
+	if (MatInstancesSelected.Num() == 0)
+	{
+		for (int32 i = 0; i < ISMC_Selected->GetNumMaterials(); i++)
+		{
+			MatInstancesSelected.Add(ISMC_Selected->CreateAndSetMaterialInstanceDynamic(i));
+		}
+	}
+	for (int32 i=0; i < MatInstancesSelected.Num(); i++)
+	{
+		MatInstancesSelected[i]->SetScalarParameterValue(FName("Highlight"), 1.0f);
+	}
+	HighlightedIndexes.AddUnique(Index);
+
+	ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+	ISMC_Selected->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
+	ISMC_Selected->SetVisibility(true);
 }
 
 void AInstancedStaticMeshActor::RemoveHighlight_Implementation(int32 Index)
 {
-	if (!HighlightedIndexes.Contains(Index) || (OpacityLevels.IsValidIndex(Index) && OpacityLevels[Index] != EOpacityLevel::Opaque) )
+	if (!HighlightedIndexes.Contains(Index) || !IsFullyOpaque(Index) )
 	{
 		return;
 	}
@@ -125,26 +143,7 @@ FObjectIdentifier AInstancedStaticMeshActor::GetObjectIdentifier_Implementation(
 
 EOpacityLevel AInstancedStaticMeshActor::GetObjectOpacity_Implementation(int32 Index) const
 {
-	if (OpacityLevels.IsValidIndex(Index))
-	{
-		return OpacityLevels[Index];
-	}
-	return EOpacityLevel::Opaque;	
-}
-
-void AInstancedStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)
-{
-	if (Index != -1)
-	{
-		SetObjectOpacity_Internal(Index, NewOpacityLevel);
-	}
-	else
-	{
-		for (int i = 0; i < NumberOfInstances; i++)
-		{
-			SetObjectOpacity_Internal(i, NewOpacityLevel);
-		}
-	}
+	return ObjectsOpacity[Index];
 }
 
 int32 AInstancedStaticMeshActor::Length_Implementation() const
@@ -176,42 +175,89 @@ void AInstancedStaticMeshActor::GetObjectBounds_Implementation(int32 Index, bool
 	}
 }
 
-void AInstancedStaticMeshActor::SetObjectOpacity_Internal(int32 Index, EOpacityLevel NewOpacityLevel)
+EOpacityLevel AInstancedStaticMeshActor::GetSetSelectionOpacity_Implementation(int32 Index) const
 {
-	if (OpacityLevels.IsValidIndex(Index))
-	{
-		OpacityLevels[Index] = NewOpacityLevel;
+	return SetSelectionsOpacity[Index];
+}
 
-		switch (NewOpacityLevel)
+
+void AInstancedStaticMeshActor::SetObjectOpacity_Internal(int32 Index)
+{
+	EOpacityLevel NewOpacityLevel = FMath::Max(ObjectsOpacity[Index], SetSelectionsOpacity[Index]);
+
+	switch (NewOpacityLevel)
+	{
+		case EOpacityLevel::Opaque:
 		{
-			case EOpacityLevel::Opaque:
+			ISMC->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
+			ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+			ISMC_Transparent->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+			if (HighlightedIndexes.Find(Index) != INDEX_NONE)
 			{
-				ISMC->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
+				Highlight(Index);
+			}
+		} break;
+		case EOpacityLevel::Transparent:
+		{
+				ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+				ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+				ISMC_Transparent->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
+				ISMC_Transparent->SetVisibility(true);
+
+				if (MatInstancesTransparent.Num() == 0)
+				{
+					for (int32 i = 0; i < ISMC_Transparent->GetNumMaterials(); i++)
+					{
+						MatInstancesTransparent.Add(ISMC_Transparent->CreateAndSetMaterialInstanceDynamic(i));
+						MatInstancesTransparent[i]->SetScalarParameterValue(FName("UserSetOpacity"), 0.5f);
+					}
+				}
+		} break;
+		case EOpacityLevel::Invisible:
+		{
+				ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
 				ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
 				ISMC_Transparent->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-				if (HighlightedIndexes.Find(Index) != INDEX_NONE)
-				{
-					Highlight(Index);
-				}
-			} break;
-			case EOpacityLevel::Transparent:
-			{
-					ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-					ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-					ISMC_Transparent->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
-					ISMC_Transparent->SetVisibility(true);
-			} break;
-			case EOpacityLevel::Invisible:
-			{
-					ISMC->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-					ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-					ISMC_Transparent->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-			} break;
-		}
+		} break;
+	}
 
-		if (!IsAnyInstanceTransparent())
+	if (!IsAnyInstanceTransparent())
+	{
+		ISMC_Transparent->SetVisibility(false);
+	}
+}
+
+
+void AInstancedStaticMeshActor::SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)
+{
+	if (Index != -1)
+	{
+		SetSelectionsOpacity[Index] = NewOpacityLevel;
+		SetObjectOpacity_Internal(Index);
+	}
+	else
+	{
+		for (int i = 0; i < NumberOfInstances; i++)
 		{
-			ISMC_Transparent->SetVisibility(false);
+			SetSelectionsOpacity[i] = NewOpacityLevel;
+			SetObjectOpacity_Internal(i);
+		}
+	}
+}
+
+void AInstancedStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)
+{
+	if (Index != -1)
+	{
+		ObjectsOpacity[Index] = NewOpacityLevel;
+		SetObjectOpacity_Internal(Index);
+	}
+	else
+	{
+		for (int i = 0; i < NumberOfInstances; i++)
+		{
+			ObjectsOpacity[i] = NewOpacityLevel;
+			SetObjectOpacity_Internal(i);
 		}
 	}
 }
@@ -243,16 +289,5 @@ void AInstancedStaticMeshActor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UMaterialInstanceDynamic* MatInstSelected = ISMC_Selected->CreateAndSetMaterialInstanceDynamic(0);
-	if (MatInstSelected != nullptr)
-	{
-		MatInstSelected->SetScalarParameterValue(FName("Highlight"), 1.0f);
-	}
-
-	UMaterialInstanceDynamic* MatInstTransparent = ISMC_Transparent->CreateAndSetMaterialInstanceDynamic(0);
-	if (MatInstTransparent != nullptr)
-	{
-		MatInstTransparent->SetScalarParameterValue(FName("UserSetOpacity"), 0.5f);
-	}
 }
 

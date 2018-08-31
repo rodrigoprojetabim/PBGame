@@ -373,11 +373,24 @@ float UProjetaBimPluginBPLibrary::GetDistanceToCollision(UPrimitiveComponent * C
 	return CollisionComponent->GetDistanceToCollision(Point, ClosestPointOnCollision);
 }
 
-FString UProjetaBimPluginBPLibrary::GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier) const
+FString UProjetaBimPluginBPLibrary::GetUniqueIdentifier(const FObjectIdentifier& ObjectIdentifier)
 {
 	if (ObjectIdentifier.LinkIdentifier == TEXT("0"))
 	{
 		return ObjectIdentifier.JsonIdentifier;
 	}
 	return ObjectIdentifier.LinkIdentifier + TEXT("_") + ObjectIdentifier.JsonIdentifier;
+}
+
+float UProjetaBimPluginBPLibrary::GetOpacityLevelValue(EOpacityLevel OpacityLevel)
+{
+	if (OpacityLevel == EOpacityLevel::Opaque)
+	{
+		return 1.0;
+	} 
+	if (OpacityLevel == EOpacityLevel::Transparent)
+	{
+		return 0.5f;
+	}
+	return 0.0f;
 }
