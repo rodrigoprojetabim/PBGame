@@ -33,12 +33,20 @@ void ASelectableStaticMeshActor::UpdateCollisionAfterOpacityChange()
 
 void ASelectableStaticMeshActor::Highlight_Implementation(int32 Index)
 {
+	if (!Execute_IsFullyOpaque(this,Index))
+	{
+		return;
+	}
 	GetStaticMeshComponent()->SetRenderCustomDepth(true);
 	SetScalarParameter(FName(TEXT("Highlight")), 1.0f);
 }
 
 void ASelectableStaticMeshActor::RemoveHighlight_Implementation(int32 Index)
 {
+	if (!Execute_IsFullyOpaque(this,Index))
+	{
+		return;
+	}
 	GetStaticMeshComponent()->SetRenderCustomDepth(false);
 	SetScalarParameter(FName(TEXT("Highlight")), 0.0f);
 }
@@ -89,6 +97,11 @@ void ASelectableStaticMeshActor::SetSetSelectionOpacity_Implementation(int32 Ind
 	SetScalarParameter(FName(TEXT("SetSelectionOpacity")), NewOpacity);	
 }
 
+bool ASelectableStaticMeshActor::IsFullyOpaque_Implementation(int32 Index) const
+{
+	return (ObjectOpacity == EOpacityLevel::Opaque && SetSelectionOpacity == EOpacityLevel::Opaque);
+}
+
 FString ASelectableStaticMeshActor::GetJsonIdentifier_Implementation(int32 Index) const
 {
 	return ObjectIdentifier.JsonIdentifier;
@@ -107,4 +120,7 @@ FString ASelectableStaticMeshActor::GetUniqueIdentifier_Implementation(int32 Ind
 void ASelectableStaticMeshActor::SetObjectIdentifier(const FObjectIdentifier& NewObjectIdentifier)
 {
 	ObjectIdentifier = NewObjectIdentifier;
+	ObjectIdentifier.Actor = this;
+	ObjectIdentifier.Index = 0;
+	ObjectIdentifier.LevelName = FName(*UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(this));
 }

@@ -92,7 +92,7 @@ struct FSetSelection
 
 	/** current opacity for this Set */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SetSelection")
-	float CurrentOpacity;
+	EOpacityLevel CurrentOpacity;
 
 	/** Objects in this SetSelection */
 	UPROPERTY(BlueprintReadOnly, Category = "SetSelection")
@@ -100,7 +100,7 @@ struct FSetSelection
 
 	FSetSelection()
 	{
-		CurrentOpacity = 1.0f;
+		CurrentOpacity = EOpacityLevel::Opaque;
 	}
 };
 

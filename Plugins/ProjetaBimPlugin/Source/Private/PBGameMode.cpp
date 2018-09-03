@@ -92,14 +92,14 @@ void APBGameMode::InitializeSetSelectionMap()
 			UGameplayStatics::GetAllActorsWithInterface(this, USelectionInterface::StaticClass(), ActorList);
 			for (const auto &Actor : ActorList) 
 			{
-				const auto &Interface = Cast<ISelectionInterface>(Actor);
+				ISelectionInterface* Interface = Cast<ISelectionInterface>(Actor);
 				if (Interface != nullptr && !Actor->ActorHasTag(SetSelectionDefinedTag) && UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(Actor) == LevelName)
 				{
 					//actor not yet processed, and belongs to the currently processed streaming level
-					for (int32 i = 0; i < Interface->Length(); i++)
+					for (int32 i = 0; i < Interface->Execute_Length(Actor); i++)
 					{
-						const FString ObjectUniqueIdentifier = Interface->GetUniqueIdentifier(i);
-						FObjectIdentifier Obj = Interface->GetObjectIdentifier(i);
+						const FString ObjectUniqueIdentifier = Interface->Execute_GetUniqueIdentifier(Actor,i);
+						FObjectIdentifier Obj = Interface->Execute_GetObjectIdentifier(Actor,i);
 						if (!Actor->ActorHasTag(AddedToSMMapTag))
 						{
 							ObjectsMap.Add(ObjectUniqueIdentifier, Obj);

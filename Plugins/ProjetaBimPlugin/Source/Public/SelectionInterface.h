@@ -82,4 +82,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
 	void SetSetSelectionOpacity(int32 Index, EOpacityLevel NewOpacityLevel);
 	
+	/** returns whether this object is opaque and its setseleciton as well
+		@param Index used only for instanced static mesh actors */
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Selection", meta=(Keywords="transparent invisible opaque translucent"))
+	bool IsFullyOpaque(int32 Index) const;
+	
 };

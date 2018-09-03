@@ -49,8 +49,6 @@ protected:
 	TArray<class UMaterialInstanceDynamic*> MatInstancesSelected;
 	TArray<class UMaterialInstanceDynamic*> MatInstancesTransparent;
 
-	bool IsFullyOpaque(int32 Index) const;
-	
 public:
 	AInstancedStaticMeshActor();
 	
@@ -63,8 +61,8 @@ public:
 	void SetMaterialAndMesh_Implementation(class AStaticMeshActor* SourceSMA);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Instanced Static Mesh Actor")
-	void AddInstancePB(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
-	void AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier);
+	void AddInstancePB(const FTransform& WorldTransform, FObjectIdentifier ObjectIdentifier);
+	void AddInstancePB_Implementation(const FTransform& WorldTransform, FObjectIdentifier ObjectIdentifier);
 
 	UFUNCTION(BlueprintPure, Category = "Instanced Static Mesh Actor", meta=(Keywords="json link"))
 	int32 ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const;
@@ -83,5 +81,6 @@ public:
 	void GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const override;
 	EOpacityLevel GetSetSelectionOpacity_Implementation(int32 Index) const override;
 	void SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
+	bool IsFullyOpaque_Implementation(int32 Index) const override;
 	/* end ISelectionInterface */
 };

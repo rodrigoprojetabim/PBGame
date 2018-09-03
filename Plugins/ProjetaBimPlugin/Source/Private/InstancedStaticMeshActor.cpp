@@ -4,6 +4,7 @@
 #include "Components/InstancedStaticMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Engine/StaticMeshActor.h"
+#include "ProjetaBimPluginBPLibrary.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
 #define LIMBO FTransform(FVector(WORLD_MAX-10.f, WORLD_MAX-10.f, WORLD_MAX-10.f))
@@ -20,10 +21,6 @@ bool AInstancedStaticMeshActor::IsAnyInstanceTransparent() const
 	return false;
 }
 
-bool AInstancedStaticMeshActor::IsFullyOpaque(int32 Index) const
-{
-	return (ObjectsOpacity[Index] == EOpacityLevel::Opaque && SetSelectionsOpacity[Index] == EOpacityLevel::Opaque);
-}
 
 AInstancedStaticMeshActor::AInstancedStaticMeshActor()
 {
@@ -68,9 +65,14 @@ void AInstancedStaticMeshActor::SetMaterialAndMesh_Implementation(AStaticMeshAct
 	}
 }
 
-void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& WorldTransform, const FObjectIdentifier& ObjectIdentifier)
+void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& WorldTransform, FObjectIdentifier ObjectIdentifier)
 {
 	const int32 Index = ISMC->AddInstanceWorldSpace(WorldTransform);
+	
+	ObjectIdentifier.Actor = this;
+	ObjectIdentifier.Index = Index;
+	ObjectIdentifier.LevelName = FName(*UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(this));
+
 	IDMap.Add(Index, ObjectIdentifier);
 	ISMC_Selected->AddInstanceWorldSpace(LIMBO);
 	ISMC_Transparent->AddInstanceWorldSpace(LIMBO);
@@ -79,6 +81,7 @@ void AInstancedStaticMeshActor::AddInstancePB_Implementation(const FTransform& W
 	SetSelectionsOpacity.Add(EOpacityLevel::Opaque);
 	OriginalWorldTransforms.Add(WorldTransform);
 	NumberOfInstances = NumberOfInstances + 1;
+	
 }
 
 int32 AInstancedStaticMeshActor::ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const
@@ -97,7 +100,7 @@ int32 AInstancedStaticMeshActor::ObjectIdentifierToInstanceIndex(const FObjectId
 
 void AInstancedStaticMeshActor::Highlight_Implementation(int32 Index)
 {
-	if (!IsFullyOpaque(Index))
+	if (!Execute_IsFullyOpaque(this,Index))
 	{
 		return;
 	}
@@ -121,18 +124,21 @@ void AInstancedStaticMeshActor::Highlight_Implementation(int32 Index)
 
 void AInstancedStaticMeshActor::RemoveHighlight_Implementation(int32 Index)
 {
-	if (!HighlightedIndexes.Contains(Index) || !IsFullyOpaque(Index) )
+	if (!HighlightedIndexes.Contains(Index) )
 	{
 		return;
 	}
 	HighlightedIndexes.Remove(Index);
 
-	ISMC->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
-	ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
-
-	if (HighlightedIndexes.Num() == 0)
+	if (Execute_IsFullyOpaque(this,Index))
 	{
-		ISMC_Selected->SetVisibility(false);
+		ISMC->UpdateInstanceTransform(Index, OriginalWorldTransforms[Index], true, true, true);
+		ISMC_Selected->UpdateInstanceTransform(Index, LIMBO, true, true, true);
+
+		if (HighlightedIndexes.Num() == 0)
+		{
+			ISMC_Selected->SetVisibility(false);
+		}
 	}
 }
 
@@ -194,7 +200,7 @@ void AInstancedStaticMeshActor::SetObjectOpacity_Internal(int32 Index)
 			ISMC_Transparent->UpdateInstanceTransform(Index, LIMBO, true, true, true);
 			if (HighlightedIndexes.Find(Index) != INDEX_NONE)
 			{
-				Highlight(Index);
+				Execute_Highlight(this,Index);
 			}
 		} break;
 		case EOpacityLevel::Transparent:
@@ -243,6 +249,11 @@ void AInstancedStaticMeshActor::SetSetSelectionOpacity_Implementation(int32 Inde
 			SetObjectOpacity_Internal(i);
 		}
 	}
+}
+
+bool AInstancedStaticMeshActor::IsFullyOpaque_Implementation(int32 Index) const
+{
+	return (ObjectsOpacity[Index] == EOpacityLevel::Opaque && SetSelectionsOpacity[Index] == EOpacityLevel::Opaque);
 }
 
 void AInstancedStaticMeshActor::SetObjectOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel)

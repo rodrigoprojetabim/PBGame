@@ -38,6 +38,7 @@ public:
 	void GetObjectBounds_Implementation(int32 Index, bool bOnlyCollidingComponents, FVector& OutOrigin, FVector& OutExtent) const override;
 	EOpacityLevel GetSetSelectionOpacity_Implementation(int32 Index) const override;
 	void SetSetSelectionOpacity_Implementation(int32 Index, EOpacityLevel NewOpacityLevel) override;
+	bool IsFullyOpaque_Implementation(int32 Index) const override;
 	/* end ISelectionInterface */
 	
 	ASelectableStaticMeshActor();
