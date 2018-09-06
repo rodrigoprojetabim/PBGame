@@ -394,3 +394,11 @@ float UProjetaBimPluginBPLibrary::GetOpacityLevelValue(EOpacityLevel OpacityLeve
 	}
 	return 0.0f;
 }
+
+void UProjetaBimPluginBPLibrary::SetMobility(USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility)
+{
+	if (Component)
+	{
+		Component->SetMobility(NewMobility);
+	}
+}

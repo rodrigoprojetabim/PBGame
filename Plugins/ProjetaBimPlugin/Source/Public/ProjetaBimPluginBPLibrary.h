@@ -4,6 +4,7 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ProjetaBimTypes.h"
+#include "Engine/EngineTypes.h"
 #include "ProjetaBimPluginBPLibrary.generated.h"
 
 /* 
@@ -96,4 +97,9 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	/** Gets opacity level's value */
 	UFUNCTION(BlueprintPure, Category="Object Identifier")
 	static float GetOpacityLevelValue(EOpacityLevel OpacityLevel);
+	
+	/** sets object mobility */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
+	static void SetMobility(class USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility);
+
 };
