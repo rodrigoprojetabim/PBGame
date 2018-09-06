@@ -11,6 +11,7 @@
 #include "Materials/MaterialInstance.h"
 #include "EngineUtils.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h"
 #include "PBGameMode.h"
 
 #if PLATFORM_WINDOWS
@@ -397,8 +398,29 @@ float UProjetaBimPluginBPLibrary::GetOpacityLevelValue(EOpacityLevel OpacityLeve
 
 void UProjetaBimPluginBPLibrary::SetMobility(USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility)
 {
-	if (Component)
+	if (Component != nullptr)
 	{
 		Component->SetMobility(NewMobility);
 	}
+}
+
+void UProjetaBimPluginBPLibrary::SetDistanceFieldResolutionScale(UStaticMeshComponent * SMComponent, float NewDFResolutionScale)
+{
+#if WITH_EDITOR
+	if (SMComponent == nullptr)
+	{
+		return;
+	}
+	UStaticMesh* Mesh = SMComponent->GetStaticMesh();
+	if (Mesh && Mesh->SourceModels.Num() > 0)
+	{
+		Mesh->Modify();
+		for (int32 i=0; i < Mesh->SourceModels.Num(); i++)
+		{
+			FStaticMeshSourceModel& Model = Mesh->SourceModels[i];
+			Model.BuildSettings.DistanceFieldResolutionScale = NewDFResolutionScale;
+		}
+		Mesh->Build();
+	}
+#endif
 }

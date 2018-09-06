@@ -84,5 +84,9 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	/** sets object mobility */
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
 	static void SetMobility(class USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility);
+	
+	/** set distance field resolution scale */
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
+	static void SetDistanceFieldResolutionScale(class UStaticMeshComponent* SMComponent, float NewDFResolutionScale);
 
 };
