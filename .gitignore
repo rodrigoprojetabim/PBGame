@@ -46,6 +46,8 @@
 *.uproject
 *.log
 *.lib
+*.mp3
+Log.txt
 
 # Derived data cache is never checked in
 /DerivedDataCache/**
