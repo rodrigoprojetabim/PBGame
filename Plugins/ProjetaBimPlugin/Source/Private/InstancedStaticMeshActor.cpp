@@ -24,6 +24,7 @@ bool AInstancedStaticMeshActor::IsAnyInstanceTransparent() const
 
 AInstancedStaticMeshActor::AInstancedStaticMeshActor()
 {
+	PrimaryActorTick.bStartWithTickEnabled = false;
 	PrimaryActorTick.bCanEverTick = false;
 
 	ISMC = CreateDefaultSubobject<UInstancedStaticMeshComponent>(TEXT("ISMC"));

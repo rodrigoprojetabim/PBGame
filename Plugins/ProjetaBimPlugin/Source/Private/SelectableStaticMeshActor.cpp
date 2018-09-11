@@ -9,6 +9,8 @@ ASelectableStaticMeshActor::ASelectableStaticMeshActor()
 {
 	ObjectOpacity = EOpacityLevel::Opaque;
 	SetSelectionOpacity = EOpacityLevel::Opaque;
+	PrimaryActorTick.bStartWithTickEnabled = false;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 void ASelectableStaticMeshActor::SetScalarParameter(FName ParameterName, float Value)
