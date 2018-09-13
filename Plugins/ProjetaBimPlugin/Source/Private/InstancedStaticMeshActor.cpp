@@ -99,6 +99,21 @@ int32 AInstancedStaticMeshActor::ObjectIdentifierToInstanceIndex(const FObjectId
 	return -1;
 }
 
+void AInstancedStaticMeshActor::SetObjectIdentifier(int32 Index, const FObjectIdentifier & NewObjectIdentifier)
+{
+	TArray<int32> Keys;
+	IDMap.GetKeys(Keys);
+	if (Keys.Find(Index) != INDEX_NONE)
+	{
+		FObjectIdentifier ObjectIdentifier = NewObjectIdentifier;
+		ObjectIdentifier.Actor = this;
+		ObjectIdentifier.Index = Index;
+		ObjectIdentifier.LevelName = FName(*UProjetaBimPluginBPLibrary::GetActorsStreamingLevelName(this));
+		IDMap.Remove(Index);
+		IDMap.Add(Index, ObjectIdentifier);
+	}
+}
+
 void AInstancedStaticMeshActor::Highlight_Implementation(int32 Index)
 {
 	if (!Execute_IsFullyOpaque(this,Index))

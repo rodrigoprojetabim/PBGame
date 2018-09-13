@@ -67,6 +67,9 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Instanced Static Mesh Actor", meta=(Keywords="json link"))
 	int32 ObjectIdentifierToInstanceIndex(const FObjectIdentifier& ObjectID) const;
 	
+	UFUNCTION(BlueprintCallable, Category="ProjetaBIM", meta=(Keywords="json link"))
+	void SetObjectIdentifier(int32 Index, const FObjectIdentifier& NewObjectIdentifier);
+
 	/* ISelectionInterface */
 	virtual void Highlight_Implementation(int32 Index) override;
 	virtual void RemoveHighlight_Implementation(int32 Index) override;
