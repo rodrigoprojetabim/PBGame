@@ -73,6 +73,7 @@ Log.txt
 !/Content/Media/
 !/Content/Blueprints/
 !/Content/VirtualReality/
+!/Content/MaterialFamilies/
 
 /Source/**
 /Plugins/**
