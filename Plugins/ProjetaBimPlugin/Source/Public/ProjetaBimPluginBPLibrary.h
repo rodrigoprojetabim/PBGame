@@ -85,6 +85,9 @@ class UProjetaBimPluginBPLibrary : public UBlueprintFunctionLibrary
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
 	static void SetMobility(class USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility);
 	
+	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
+	static void SetDistanceFieldIndirectShadow(class UStaticMeshComponent* Component, bool bNewUseDFShadows, float MinVisibility = 0.1f);
+	
 	/** set distance field resolution scale */
 	UFUNCTION(BlueprintCallable, Category = "Utilities", meta = (Keywords = "warning assert debug"))
 	static void SetDistanceFieldResolutionScale(class UStaticMeshComponent* SMComponent, float NewDFResolutionScale);

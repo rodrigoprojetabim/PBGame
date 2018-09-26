@@ -398,10 +398,23 @@ float UProjetaBimPluginBPLibrary::GetOpacityLevelValue(EOpacityLevel OpacityLeve
 
 void UProjetaBimPluginBPLibrary::SetMobility(USceneComponent* Component, TEnumAsByte<EComponentMobility::Type> NewMobility)
 {
+#if WITH_EDITOR
 	if (Component != nullptr)
 	{
 		Component->SetMobility(NewMobility);
 	}
+#endif
+}
+
+void UProjetaBimPluginBPLibrary::SetDistanceFieldIndirectShadow(UStaticMeshComponent * Component, bool bNewUseDFShadows, float MinVisibility)
+{
+#if WITH_EDITOR
+	if (Component)
+	{
+		Component->bCastDistanceFieldIndirectShadow = bNewUseDFShadows;
+		Component->DistanceFieldIndirectShadowMinVisibility = MinVisibility;
+	}
+#endif
 }
 
 void UProjetaBimPluginBPLibrary::SetDistanceFieldResolutionScale(UStaticMeshComponent * SMComponent, float NewDFResolutionScale)
