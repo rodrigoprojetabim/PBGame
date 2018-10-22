@@ -427,13 +427,24 @@ void UProjetaBimPluginBPLibrary::SetDistanceFieldResolutionScale(UStaticMeshComp
 	UStaticMesh* Mesh = SMComponent->GetStaticMesh();
 	if (Mesh && Mesh->SourceModels.Num() > 0)
 	{
-		Mesh->Modify();
+		bool bModified = false;
 		for (int32 i=0; i < Mesh->SourceModels.Num(); i++)
 		{
 			FStaticMeshSourceModel& Model = Mesh->SourceModels[i];
-			Model.BuildSettings.DistanceFieldResolutionScale = NewDFResolutionScale;
+			if (Model.BuildSettings.DistanceFieldResolutionScale != NewDFResolutionScale)
+			{
+				if (!bModified)
+				{
+					Mesh->Modify();
+				}
+				Model.BuildSettings.DistanceFieldResolutionScale = NewDFResolutionScale;
+				bModified = true;
+			}
 		}
-		Mesh->Build();
+		if (bModified)
+		{
+			Mesh->Build();
+		}
 	}
 #endif
 }
